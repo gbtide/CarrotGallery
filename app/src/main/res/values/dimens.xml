@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common dimensions -->
+    <dimen name="margin_normal">16dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_large">32dp</dimen>
+    <dimen name="spacing_normal">8dp</dimen>
+    <dimen name="spacing_micro">4dp</dimen>
+
+    <dimen name="gallery_top_spec_line">64dp</dimen>
+    <dimen name="gallery_page_padding_bottom">56dp</dimen>
+    <dimen name="gallery_item_padding_vertical">0dp</dimen>
+
+    <dimen name="gallery_video_item_play_icon">64dp</dimen>
+    <dimen name="gallery_video_item_duration_text">11dp</dimen>
+    
+    <dimen name="upper_function_height">84dp</dimen>
+
+</resources>

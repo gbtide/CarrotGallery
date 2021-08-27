@@ -1,0 +1,19 @@
+<resources>
+
+    <!-- Widget styles -->
+    <style name="Widget.CarrotGallery" parent="@android:style/Widget.Material" />
+
+    <style name="Widget.CarrotGallery.AppBar" parent="@style/Widget.Design.AppBarLayout">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:elevation">8dp</item>
+    </style>
+
+    <!-- 리스트 빈 화면 나올 때 -->
+    <style name="Widget.CarrotGallery.EmptyResults">
+        <item name="android:drawablePadding">@dimen/margin_normal</item>
+        <item name="android:drawableTop">@drawable/ic_empty_mark</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+    </style>
+
+</resources>

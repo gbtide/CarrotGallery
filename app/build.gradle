@@ -1,0 +1,116 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
+//apply plugin: "androidx.navigation.safeargs.kotlin"
+
+android {
+    compileSdkVersion project.compileSdkVersion
+    buildToolsVersion project.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.carrot.gallery"
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('properties/project.properties').newDataInputStream())
+        buildConfigField("String", "TEMP", properties.get('temp'))
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+
+    // 프로젝트 자바 8 설정
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions.jvmTarget = "1.8"
+
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "androidx.appcompat:appcompat:${project.appcompat}"
+    implementation "androidx.constraintlayout:constraintlayout:${project.constraintlayout}"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    testImplementation "junit:junit:${project.junit}"
+    androidTestImplementation "androidx.test.ext:junit:1.1.2"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
+
+    // project module.
+    // memo. shared 내부에 model 이 api 로 연결
+    implementation(project(':core'))
+
+    // android  ktx
+    implementation "androidx.core:core-ktx:${project.core_ktx}"
+    implementation "androidx.activity:activity-ktx:${project.activity_ktx}"
+    implementation "androidx.fragment:fragment-ktx:${project.fragment_ktx}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${project.lifecycle_ktx}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:${project.lifecycle_ktx}"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:${project.lifecycle_ktx}"
+    // lifecycle scope (coroutine) 정의를 위해
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:${project.lifecycle_ktx}"
+
+    // hilt
+    implementation "com.google.dagger:hilt-android:${project.hilt_android}"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:${project.hilt_lifecycle_viewmodel}"
+    kapt "com.google.dagger:hilt-android-compiler:${project.hilt_android_compiler}"
+    kapt "androidx.hilt:hilt-compiler:${project.hilt_compiler}"
+
+    // jakewharton Timber
+    implementation "com.jakewharton.timber:timber:${project.timber}"
+
+    // coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${project.coroutines}"
+
+    // rxjava
+    implementation "io.reactivex.rxjava3:rxandroid:${project.rxjava}"
+    implementation "io.reactivex.rxjava3:rxjava:${project.rxjava}"
+
+    // material
+    api "com.google.android.material:material:${project.material}"
+
+    // swiperefreshlayout
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:${project.swiperefreshlayout}"
+
+    // paging
+    implementation "androidx.paging:paging-runtime:${project.paging}"
+    implementation "androidx.paging:paging-rxjava2:${project.paging}"
+
+    // glide
+    implementation "com.github.bumptech.glide:glide:${project.glide}"
+    kapt "com.github.bumptech.glide:compiler:${project.glide}"
+
+    // navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:${project.navigation}"
+    implementation "androidx.navigation:navigation-ui-ktx:${project.navigation}"
+//    implementation "androidx.navigation:navigation-safe-args-gradle-plugin:${project.navigation}"
+
+    // image viewer
+    // 외부 라이브러리
+    implementation "com.davemorrissey.labs:subsampling-scale-image-view-androidx:${project.imageviewer}"
+
+    // UI library
+//    implementation "com.pacioianu.david:ink-page-indicator:1.3.0"
+
+    // threetenbp
+//    api "org.threeten:threetenbp:1.3.6"
+
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/deep_sky_blue</color>
+    <color name="colorPrimaryDark">@color/warm_blue</color>
+
+    <!-- 미리 정해진 색상 -->
+    <color name="deep_sky_blue">#1a73e8</color>
+    <color name="warm_blue">#574ddd</color>
+    <color name="carolina_blue">#8ab4f8</color>
+    <color name="cornflower_blue">#669DF6</color>
+    <color name="teal">#069f86</color>
+    <color name="bright_light_blue">#27e5fd</color>
+    <color name="sun_yellow">#fcd230</color>
+    <color name="bright_orange">#ff6c00</color>
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <color name="transparent">#0fff</color>
+
+    <!-- 스와이프 동글뱅이 -->
+    <integer-array name="swipe_refresh">
+        <item>@color/deep_sky_blue</item>
+        <item>@color/teal</item>
+        <item>@color/bright_light_blue</item>
+        <item>@color/sun_yellow</item>
+        <item>@color/bright_orange</item>
+    </integer-array>
+
+    <color name="color_control_medium">#aaffffff</color>
+    <color name="color_control_light">#39000000</color>
+
+</resources>

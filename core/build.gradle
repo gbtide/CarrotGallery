@@ -1,0 +1,86 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
+
+android {
+    compileSdkVersion project.compileSdkVersion
+    buildToolsVersion project.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // 프로젝트 자바 8 설정
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions.jvmTarget = "1.8"
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // project module
+    // shared 가져가는 쪽에서 model도 handling 할 수 있어야 하므로 api.
+    api(project(":model"))
+
+    // app compat
+    implementation "androidx.appcompat:appcompat:${project.appcompat}"
+
+    // core ktx
+    implementation "androidx.core:core-ktx:${project.core_ktx}"
+
+    // android ktx
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${project.lifecycle_ktx}"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:${project.lifecycle_ktx}"
+
+    // coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${project.coroutines}"
+
+    // hilt
+    implementation "com.google.dagger:hilt-android:${project.hilt_android}"
+    kapt "com.google.dagger:hilt-android-compiler:${project.hilt_android_compiler}"
+    kapt "androidx.hilt:hilt-compiler:${project.hilt_compiler}"
+
+    // jakewharton Timber
+    implementation "com.jakewharton.timber:timber:${project.timber}"
+
+    // paging
+    implementation "androidx.paging:paging-runtime:${project.paging}"
+    implementation "androidx.paging:paging-rxjava2:${project.paging}"
+
+    // retrofit2
+    implementation("com.squareup.retrofit2:retrofit:${project.retrofit}") {
+        exclude module: 'okhttp'
+    }
+    // cannot access 류의 빌드 오류 : 해결 implementation -> api
+    // hilt component 가 application class 에 install 되는 과정에서 app module에 노출되는 것 같다.
+    // 더 좋은 방안이 없을지 고민해보자
+    api "com.squareup.retrofit2:converter-gson:${project.gson_converter}"
+    api "com.squareup.okhttp3:okhttp:${project.okhttp}"
+    api "com.squareup.okhttp3:logging-interceptor:${project.okhttp_interceptor}"
+    implementation "com.google.code.gson:gson:${project.gson}"
+
+    // test
+    testImplementation "junit:junit:${project.junit}"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+}

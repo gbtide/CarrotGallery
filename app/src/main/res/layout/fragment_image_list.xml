@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".gallery.ImageListFragment">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.carrot.gallery.gallery.ImageListViewModel" />
+
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
+            style="@style/Widget.CarrotGallery.AppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
+                app:navigationIcon="@drawable/ic_menu"
+                app:title="@string/title_main" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <com.carrot.gallery.widget.CustomSwipeRefreshLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:onRefreshListener="@{() -> viewModel.onSwipeRefresh()}"
+            app:refreshing="@{viewModel.swipeRefreshing}"
+            app:swipeRefreshColors="@{@intArray/swipe_refresh}">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview_gallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:paddingBottom="@dimen/gallery_page_padding_bottom"
+                    android:scrollbars="vertical"
+                    />
+
+                <TextView
+                    android:id="@+id/empty"
+                    style="@style/Widget.CarrotGallery.EmptyResults"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/gallery_page_padding_bottom"
+                    android:layout_marginHorizontal="@dimen/margin_large"
+                    android:text="@string/picker_image_empty"
+                    app:goneUnless="@{viewModel.isEmpty}"
+                    tools:visibility="visible" />
+
+            </FrameLayout>
+
+        </com.carrot.gallery.widget.CustomSwipeRefreshLayout>
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateTint="?attr/colorControlLight"
+            app:goneUnless="@{viewModel.isLoading}" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

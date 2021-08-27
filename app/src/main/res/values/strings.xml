@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Carrot Gallery</string>
+    <string name="title_main">Gallery</string>
+    <string name="picker_image_empty">No images found.</string>
+    <string name="read_write_permission_rationale">The app needs read-write permission to show your phone image.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="upper_function_go_to_movie">Movie</string>
+    <string name="upper_function_go_to_favorite">Favorite</string>
+
+</resources>
