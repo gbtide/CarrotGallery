@@ -90,13 +90,13 @@ class ImageListFragment : Fragment() {
             findNavController().navigate(R.id.to_image_viewer, bundle)
         })
 
-        viewModel.imageResult.observe(viewLifecycleOwner, { image ->
+        viewModel.imageList.observe(viewLifecycleOwner, { image ->
             Timber.d("### result : %s", image)
         })
-
-        viewModel.imagesResult.observe(viewLifecycleOwner, { images ->
-            Timber.d("### result : %s", images)
-        })
+//
+//        viewModel.imagesResult.observe(viewLifecycleOwner, { images ->
+//            Timber.d("### result : %s", images)
+//        })
 
         binding.viewModel = viewModel
 
