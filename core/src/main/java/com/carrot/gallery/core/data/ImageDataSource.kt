@@ -23,7 +23,6 @@ class LoremPicksumImageDataSource @Inject constructor(
 
     override suspend fun getImage(id: Int): Image {
         return imageApis.getImage(id)
-//        return Image(0L, "", 0, 0, "", "")
     }
 
 }
