@@ -31,6 +31,14 @@ import dagger.hilt.android.AndroidEntryPoint
  * api : https://picsum.photos/id/870/200/300
  * 상세화면에서는 역시 폰 해상도 가져와서 적절히 보여주고,
  * 화면 효과 누르면 적절히 필터 먹여서 보여주는 정도
+ *
+ * 3.
+ * 디바이스 가로 길이에 따라 column count 조절
+ *
+ * 4.
+ * 이미지 상세서 줌인 기능
+ *
+ *
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

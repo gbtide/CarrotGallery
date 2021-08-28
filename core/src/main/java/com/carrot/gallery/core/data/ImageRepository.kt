@@ -9,7 +9,7 @@ import javax.inject.Singleton
  */
 interface ImageRepository {
     suspend fun getImages(page: Int, limit: Int): List<Image>
-    suspend fun getImage(id: Int): Image
+    suspend fun getImage(id: Long): Image
 }
 
 @Singleton
@@ -21,7 +21,7 @@ class LoremPicksumImageRepository @Inject constructor(
         return imageDataSource.getImages(page, limit)
     }
 
-    override suspend fun getImage(id: Int): Image {
+    override suspend fun getImage(id: Long): Image {
         return imageDataSource.getImage(id)
     }
 }

@@ -42,9 +42,6 @@ class ImageViewerFragment : Fragment() {
         binding = FragmentImageViewerBinding.inflate(inflater, container, false)
             .apply {
                 lifecycleOwner = viewLifecycleOwner
-
-                // TODO image setting
-//                image = this@ImageViewerFragment.image
             }
 
         return binding.root
@@ -52,12 +49,12 @@ class ImageViewerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initViewModel()
-//        viewModel.onViewCreated(image)
+        viewModel.onViewCreated(imageId)
     }
 
     private fun initViewModel() {
+        binding.viewModel = viewModel
     }
 
 }

@@ -40,7 +40,7 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:onRefreshListener="@{() -> viewModel.onSwipeRefresh()}"
-            app:refreshing="@{viewModel.swipeRefreshing}"
+            app:refreshing="@{viewModel.isLoading}"
             app:swipeRefreshColors="@{@intArray/swipe_refresh}">
 
             <FrameLayout
@@ -72,15 +72,6 @@
             </FrameLayout>
 
         </com.carrot.gallery.widget.CustomSwipeRefreshLayout>
-
-        <ProgressBar
-            android:id="@+id/loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            android:indeterminateTint="?attr/colorControlLight"
-            app:goneUnless="@{viewModel.isLoading}" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

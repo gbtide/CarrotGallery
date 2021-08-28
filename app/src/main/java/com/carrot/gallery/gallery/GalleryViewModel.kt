@@ -2,44 +2,45 @@ package com.carrot.gallery.gallery
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import com.carrot.gallery.core.di.IoDispatcher
 import com.carrot.gallery.core.domain.GetImageParameter
-import com.carrot.gallery.core.domain.GetImageUseCase
 import com.carrot.gallery.core.domain.GetImagesUseCase
 import com.carrot.gallery.core.result.Result
+import com.carrot.gallery.core.util.CollectionUtils
 import com.carrot.gallery.core.util.SingleLiveEvent
-import com.carrot.gallery.core.util.combine
-import com.carrot.gallery.core.util.map
 import com.carrot.gallery.model.gallery.Image
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 /**
  * Created by kyunghoon on 2021-08
  */
 class GalleryViewModel @ViewModelInject constructor(
     private val getImagesUseCase: GetImagesUseCase,
-    private val getImageUseCase: GetImageUseCase
+    @IoDispatcher private val idDispatcher: CoroutineDispatcher
 ) : ViewModel(), ImageClickListener {
 
     companion object {
         private const val FIRST_IMAGE_PAGE_NO = 1
-        private const val TAG = "ImageListViewModel"
-        private const val IMAGE_COUNT_PER_PAGE = "ImageCountPerPage"
+        private const val ITEM_COUNT_PER_PAGE = 30
+    }
+
+    val images: LiveData<List<Any>>
+
+    private val lastAddedImages = MutableLiveData<List<Any>>()
+
+    private var isLastPage: LiveData<Boolean> = lastAddedImages.map {
+        CollectionUtils.isEmpty(it) || it.size < ITEM_COUNT_PER_PAGE
     }
 
     private val currentPage = MutableLiveData<Int>()
 
-    lateinit var imageList: LiveData<List<Any>>
-
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean>
         get() = _isLoading
-
-    private val dispatchSwipe = MutableLiveData<Boolean>()
-
-    val swipeRefreshing = dispatchSwipe.combine(_isLoading) { bySwipe, isLoading ->
-        bySwipe && isLoading
-    }
 
     val isEmpty = MutableLiveData<Boolean>()
 
@@ -50,16 +51,12 @@ class GalleryViewModel @ViewModelInject constructor(
 //    val imageResult: LiveData<Result<Image>> = liveData {
 //        emit(getImageUseCase(1))
 //    }
-//
-//    val imagesResult: LiveData<Result<List<Image>>> = liveData {
-//        emit(getImagesUseCase(GetImageParameter(1, 30)))
-//    }
-
-
 
     init {
-        imageList = currentPage.switchMap { page ->
-            getImagesUseCase(GetImageParameter(page, 30))
+        _isLoading.value = false
+
+        images = currentPage.switchMap { page ->
+            getImagesUseCase(GetImageParameter(page, ITEM_COUNT_PER_PAGE))
                 .filter {
                     if (it is Result.Loading) {
                         _isLoading.value = true
@@ -68,32 +65,60 @@ class GalleryViewModel @ViewModelInject constructor(
                     true
                 }
                 .map {
-                    _isLoading.value = false
-
                     if (it is Result.Success) {
-                        val addedImages = GalleryImageMapper.fromImages(it.data)
-                        imageList.value?.let { oldList -> return@map oldList + addedImages }
-                        return@map addedImages
+                        lastAddedImages.value = it.data
+                        return@map makeGalleryImagesFrom(it.data, page)
 
                     } else if (it is Result.Error) {
-                        // 에러뷰 노출
-                        return@map mutableListOf()
+                        return@map emptyList<Any>()
+
                     }
                     throw IllegalArgumentException("Unknown Status")
+
+                }.map {
+                    _isLoading.value = false
+                    return@map it
                 }
                 .asLiveData()
         }
 
+        requestFirstPage()
+    }
+
+    private fun requestFirstPage() {
         currentPage.value = FIRST_IMAGE_PAGE_NO
     }
 
-    fun onSwipeRefresh() {
-        _isLoading.value = true
-        dispatchSwipe.value = true
-        refreshList()
+    private fun requestNextPage() {
+        currentPage.value = currentPage.value!! + 1
     }
 
-    private fun refreshList() {
+    private suspend fun makeGalleryImagesFrom(data: List<Image>, page: Int): List<Any> {
+        val addedImages: List<GalleryImage>
+        withContext(idDispatcher) {
+            addedImages = GalleryImageMapper.fromImages(data)
+        }
+
+        return if (page == FIRST_IMAGE_PAGE_NO) {
+            addedImages
+        } else {
+            val oldList = images.value!!
+            oldList + addedImages
+        }
+    }
+
+    fun onReceiveLoadMoreSignal() {
+        Timber.d("#### onReceiveLoadMoreSignal")
+        if (isLastPage.value == true || _isLoading.value == true) {
+            return
+        }
+
+        _isLoading.value = true // memo. Result.Loading 로딩 판정보다 onReceiveLoadMoreSignal 재호출이 빠를 수 있어서 추가했습니다.
+        requestNextPage()
+    }
+
+    fun onSwipeRefresh() {
+        requestFirstPage()
     }
 
     override fun onClickImage(image: GalleryImage) {

@@ -17,32 +17,24 @@ import com.carrot.gallery.MainViewModel
 import com.carrot.gallery.R
 import com.carrot.gallery.databinding.FragmentGalleryBinding
 import com.carrot.gallery.viewer.ImageViewerFragment
+import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
 import timber.log.Timber
 
 
-private const val ARG_SOME = "ARG_SOME"
-
 @AndroidEntryPoint
 class GalleryFragment : Fragment() {
-//    private var galleryContentsType: GalleryContentsType? = null
-
     private lateinit var binding: FragmentGalleryBinding
     private var galleryAdapter: GalleryAdapter? = null
-
     private val viewModel: GalleryViewModel by viewModels()
     private val mainActivityViewModel: MainViewModel by activityViewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-//            galleryContentsType = it.getSerializable(ARG_SOME)
-//                .convertTo(
-//                GalleryContentsType::class.java,
-//                GalleryContentsType.GALLERY
-//            )
         }
     }
 
@@ -50,7 +42,6 @@ class GalleryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         binding = FragmentGalleryBinding.inflate(inflater, container, false)
             .apply {
                 lifecycleOwner = viewLifecycleOwner
@@ -75,7 +66,7 @@ class GalleryFragment : Fragment() {
             findNavController().navigate(R.id.to_image_viewer, bundle)
         })
 
-        viewModel.imageList.observe(viewLifecycleOwner, { images ->
+        viewModel.images.observe(viewLifecycleOwner, { images ->
             Timber.d("### result : %s", images)
             showGallery(binding.recyclerviewGallery, images)
 
@@ -92,10 +83,10 @@ class GalleryFragment : Fragment() {
             galleryAdapter = GalleryAdapter(viewBinders)
         }
         if (recyclerView.adapter == null) {
-            recyclerView.also {
-                it.adapter = galleryAdapter
+            recyclerView.apply {
+                adapter = galleryAdapter
 
-                (it.itemAnimator as DefaultItemAnimator).run {
+                (itemAnimator as DefaultItemAnimator).run {
                     supportsChangeAnimations = false
                     addDuration = 160L
                     moveDuration = 160L
@@ -103,11 +94,20 @@ class GalleryFragment : Fragment() {
                     removeDuration = 120L
                 }
 
-                it.layoutManager = GridLayoutManager(context, GalleryCons.COLUMN_COUNT)
+                val lm = GridLayoutManager(context, GalleryCons.COLUMN_COUNT)
+                layoutManager = lm
+
+                addOnScrollListener(object : GridLoadMoreListener() {
+                    override fun onLoadMore() {
+                        viewModel.onReceiveLoadMoreSignal()
+                    }
+                })
+
             }
         }
         (recyclerView.adapter as GalleryAdapter).submitList(list?.toImmutableList() ?: emptyList())
 
+        // 체크!
         // After submitting the list to the adapter, the recycler view starts measuring and drawing
         // so let's wait for the layout to be drawn before reporting fully drawn.
         recyclerView.doOnLayout {

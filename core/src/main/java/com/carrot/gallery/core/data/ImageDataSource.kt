@@ -10,7 +10,7 @@ import javax.inject.Inject
  */
 interface ImageDataSource {
     suspend fun getImages(page: Int, limit: Int): List<Image>
-    suspend fun getImage(id: Int): Image
+    suspend fun getImage(id: Long): Image
 }
 
 class LoremPicksumImageDataSource @Inject constructor(
@@ -21,7 +21,7 @@ class LoremPicksumImageDataSource @Inject constructor(
         return imageApis.getImages(page, limit)
     }
 
-    override suspend fun getImage(id: Int): Image {
+    override suspend fun getImage(id: Long): Image {
         return imageApis.getImage(id)
     }
 

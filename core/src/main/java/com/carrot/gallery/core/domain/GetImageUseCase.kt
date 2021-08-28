@@ -16,9 +16,9 @@ import javax.inject.Inject
 class GetImageUseCase @Inject constructor(
     private val imageRepository: ImageRepository,
     @IoDispatcher dispatcher: CoroutineDispatcher
-) : FlowUseCase<Int, Image>(dispatcher) {
+) : FlowUseCase<Long, Image>(dispatcher) {
 
-    override fun execute(id: Int): Flow<Result<Image>> = flow {
+    override fun execute(id: Long): Flow<Result<Image>> = flow {
         try {
             emit(Result.Loading)
             emit(Result.Success(imageRepository.getImage(id)))

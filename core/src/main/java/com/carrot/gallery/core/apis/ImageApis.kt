@@ -15,6 +15,6 @@ interface ImageApis {
     suspend fun getImages(@Query("page") page: Int, @Query("limit") limit: Int): List<Image>
 
     @GET("/id/{id}/info")
-    suspend fun getImage(@Path("id") id: Int): Image
+    suspend fun getImage(@Path("id") id: Long): Image
 
 }

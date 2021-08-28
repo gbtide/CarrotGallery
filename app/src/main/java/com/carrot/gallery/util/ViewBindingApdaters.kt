@@ -47,8 +47,9 @@ fun setGlideImage(imageView: ImageView, glideImage: String?, glideCenterInside: 
 }
 
 @BindingAdapter("image")
-fun setImage(imageView: SubsamplingScaleImageView, localPath: String) {
-    imageView.setImage(ImageSource.uri(localPath))
+fun setImage(imageView: SubsamplingScaleImageView, url: String) {
+//    imageView.setImage(ImageSource.uri(localPath))
+    imageView.setImage(ImageSource.uri(url))
 }
 
 @BindingAdapter(value = ["formatSeconds", "pattern"])
