@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 /**
  * Created by kyunghoon on 2021-08
  */
-class ImageListViewModel @ViewModelInject constructor(
+class GalleryViewModel @ViewModelInject constructor(
     private val getImagesUseCase: GetImagesUseCase,
     private val getImageUseCase: GetImageUseCase
 ) : ViewModel(), ImageClickListener {
@@ -29,7 +29,7 @@ class ImageListViewModel @ViewModelInject constructor(
 
     private val currentPage = MutableLiveData<Int>()
 
-    lateinit var imageList: LiveData<List<Image>>
+    lateinit var imageList: LiveData<List<Any>>
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean>
@@ -43,8 +43,8 @@ class ImageListViewModel @ViewModelInject constructor(
 
     val isEmpty = MutableLiveData<Boolean>()
 
-    private val _goToImageViewerAction = SingleLiveEvent<Image>()
-    val goToImageViewerAction: LiveData<Image>
+    private val _goToImageViewerAction = SingleLiveEvent<GalleryImage>()
+    val goToImageViewerAction: LiveData<GalleryImage>
         get() = _goToImageViewerAction
 
 //    val imageResult: LiveData<Result<Image>> = liveData {
@@ -58,10 +58,8 @@ class ImageListViewModel @ViewModelInject constructor(
 
 
     init {
-        currentPage.value = FIRST_IMAGE_PAGE_NO
-
         imageList = currentPage.switchMap { page ->
-            getImagesUseCase(GetImageParameter(page!!, 30))
+            getImagesUseCase(GetImageParameter(page, 30))
                 .filter {
                     if (it is Result.Loading) {
                         _isLoading.value = true
@@ -73,8 +71,9 @@ class ImageListViewModel @ViewModelInject constructor(
                     _isLoading.value = false
 
                     if (it is Result.Success) {
-                        imageList?.value?.let { oldList -> return@map oldList + it.data }
-                        return@map it.data
+                        val addedImages = GalleryImageMapper.fromImages(it.data)
+                        imageList.value?.let { oldList -> return@map oldList + addedImages }
+                        return@map addedImages
 
                     } else if (it is Result.Error) {
                         // 에러뷰 노출
@@ -84,8 +83,9 @@ class ImageListViewModel @ViewModelInject constructor(
                 }
                 .asLiveData()
         }
-    }
 
+        currentPage.value = FIRST_IMAGE_PAGE_NO
+    }
 
     fun onSwipeRefresh() {
         _isLoading.value = true
@@ -96,11 +96,11 @@ class ImageListViewModel @ViewModelInject constructor(
     private fun refreshList() {
     }
 
-    override fun onClickImage(image: Image) {
+    override fun onClickImage(image: GalleryImage) {
         _goToImageViewerAction.value = image
     }
 }
 
 interface ImageClickListener {
-    fun onClickImage(image: Image)
+    fun onClickImage(image: GalleryImage)
 }

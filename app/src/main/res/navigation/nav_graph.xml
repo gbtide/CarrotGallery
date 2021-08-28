@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/galleryFragment"
-        android:name="com.carrot.gallery.gallery.ImageListFragment"
+        android:name="com.carrot.gallery.gallery.GalleryFragment"
         android:label="fragment_gallery"
-        tools:layout="@layout/fragment_image_list">
+        tools:layout="@layout/fragment_gallery">
 
         <action
             android:id="@+id/to_image_viewer"

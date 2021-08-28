@@ -9,7 +9,11 @@
 
         <variable
             name="image"
-            type="com.carrot.gallery.model.gallery.Image" />
+            type="com.carrot.gallery.gallery.GalleryImage" />
+
+        <variable
+            name="galleryColumnCount"
+            type="Integer" />
 
         <variable
             name="eventListener"
@@ -43,7 +47,8 @@
             android:id="@+id/preview_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:glideImage="@{image.downloadUrl}"
+            app:galleryImageUrl="@{image.imageUrl}"
+            app:galleryColumnCount="@{galleryColumnCount}"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toEndOf="@id/guideline_start"
             app:layout_constraintEnd_toStartOf="@id/guideline_end"

@@ -21,7 +21,7 @@ class ImageViewerFragment : Fragment() {
         const val IMAGE_ID = "imageId"
     }
 
-    private var imageId: Int = -1
+    private var imageId: Long = -1L
 
     private lateinit var binding: FragmentImageViewerBinding
 
@@ -30,7 +30,7 @@ class ImageViewerFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            imageId = it.getSerializable(IMAGE_ID) as Int
+            imageId = it.getSerializable(IMAGE_ID) as Long
         }
     }
 
