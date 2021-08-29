@@ -1,6 +1,11 @@
 package com.carrot.gallery.core.di
 
+import com.carrot.gallery.core.apis.ImageApis
 import com.carrot.gallery.core.apis.OkHttpInterceptor
+import com.carrot.gallery.core.data.ImageDataSource
+import com.carrot.gallery.core.data.ImageRepository
+import com.carrot.gallery.core.data.LoremPicksumImageDataSource
+import com.carrot.gallery.core.data.LoremPicksumImageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +22,25 @@ import javax.inject.Singleton
  */
 @InstallIn(SingletonComponent::class)
 @Module
-class RetrofitModule {
+class NetworkModule {
+
+    @Singleton
+    @Provides
+    fun provideImageApis(retrofit: Retrofit): ImageApis {
+        return retrofit.create(ImageApis::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideImageDataSource(imageApis: ImageApis): ImageDataSource {
+        return LoremPicksumImageDataSource(imageApis)
+    }
+
+    @Singleton
+    @Provides
+    fun provideImageRepository(imageDataSource: ImageDataSource): ImageRepository {
+        return LoremPicksumImageRepository(imageDataSource)
+    }
 
     @Provides
     @Singleton

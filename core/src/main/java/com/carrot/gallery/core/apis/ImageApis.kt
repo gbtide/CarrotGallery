@@ -4,6 +4,7 @@ import com.carrot.gallery.model.response.ImageResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import javax.annotation.Nullable
 
 /**
  * Created by kyunghoon on 2021-08-27

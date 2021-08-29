@@ -28,8 +28,7 @@
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
         android:onClick="@{view -> eventListener.onClickImage(image)}"
-        android:paddingTop="@dimen/gallery_item_padding_vertical"
-        android:paddingBottom="@dimen/gallery_item_padding_vertical">
+        >
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_start"

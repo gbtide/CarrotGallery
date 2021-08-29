@@ -2,7 +2,7 @@ package com.carrot.gallery.gallery
 
 import androidx.lifecycle.*
 import com.carrot.gallery.core.di.IoDispatcher
-import com.carrot.gallery.core.domain.GetImageParameter
+import com.carrot.gallery.core.domain.GetImagesParameter
 import com.carrot.gallery.core.domain.GetImagesUseCase
 import com.carrot.gallery.core.event.SingleLiveEvent
 import com.carrot.gallery.core.result.Result
@@ -55,7 +55,7 @@ class GalleryViewModel @Inject constructor(
         _isLoading.value = false
 
         images = currentPage.switchMap { page ->
-            getImagesUseCase(GetImageParameter(page, ITEM_COUNT_PER_PAGE))
+            getImagesUseCase(GetImagesParameter(page, ITEM_COUNT_PER_PAGE))
                 .filter {
                     // 1. Loading
                     if (it is Result.Loading) {

@@ -1,8 +1,8 @@
 package com.carrot.gallery.core.data
 
+import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.model.domain.Image
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Created by kyunghoon on 2021-08-27

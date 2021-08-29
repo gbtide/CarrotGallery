@@ -11,28 +11,30 @@ interface ThumbnailUrlMaker {
     /**
      * 현재 디바이스에 맞는 사이즈를 불러옵니다.
      */
-    fun addParamToUrl(context: Context, url: String, originWidth: Int, originHeight: Int): String
+    fun makeUrlAdjustDevice(url: String, originWidth: Int, originHeight: Int): String
 
     /**
-     * 현재 디바이스 + 그리드 열숫자에 맞는 사이즈를 불러옵니다.
+     * 현재 디바이스 + 그리드 열숫자에 맞는 정사각형 사이즈를 불러옵니다.
      */
-    fun addParamToUrl(context: Context, url: String, columnCount: Int): String
+    fun makeSquareImageUrlAdjustDevice(url: String, columnCount: Int): String
 }
 
-class LoremPicsumThumbnailUrlMaker : ThumbnailUrlMaker {
+class LoremPicsumThumbnailUrlMaker constructor(
+    val context: Context
+) : ThumbnailUrlMaker {
 
-    override fun addParamToUrl(
-        context: Context,
+    override fun makeUrlAdjustDevice(
         url: String,
         originWidth: Int,
         originHeight: Int
     ): String {
         val newWith = ScreenUtility.getScreenWidth(context)
-        val newHeight = (newWith.toFloat() * (originHeight.toFloat() / originWidth.toFloat())).toInt()
+        val newHeight =
+            (newWith.toFloat() * (originHeight.toFloat() / originWidth.toFloat())).toInt()
         return "$url/$newWith/$newHeight"
     }
 
-    override fun addParamToUrl(context: Context, url: String, columnCount: Int): String {
+    override fun makeSquareImageUrlAdjustDevice(url: String, columnCount: Int): String {
         val newWith = (ScreenUtility.getScreenWidth(context) / columnCount)
         return "$url/$newWith/$newWith"
     }

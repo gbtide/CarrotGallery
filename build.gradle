@@ -68,6 +68,8 @@ ext {
     navigation = "2.3.2"
     imageviewer = "3.10.0"
     photoview = "2.3.0"
+//    spring_web = "5.2.16.RELEASE"
+//    apache_http_client = "4.5.13"
 }
 
 allprojects {

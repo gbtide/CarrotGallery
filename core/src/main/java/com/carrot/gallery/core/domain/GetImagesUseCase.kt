@@ -16,9 +16,9 @@ import javax.inject.Inject
 class GetImagesUseCase @Inject constructor(
     private val imageRepository: ImageRepository,
     @IoDispatcher dispatcher: CoroutineDispatcher
-) : FlowUseCase<GetImageParameter, List<Image>>(dispatcher) {
+) : FlowUseCase<GetImagesParameter, List<Image>>(dispatcher) {
 
-    override fun execute(param: GetImageParameter): Flow<Result<List<Image>>> = flow {
+    override fun execute(param: GetImagesParameter): Flow<Result<List<Image>>> = flow {
         try {
             emit(Result.Loading)
             emit(Result.Success(imageRepository.getImages(param.page, param.limit)))
@@ -28,7 +28,7 @@ class GetImagesUseCase @Inject constructor(
     }
 }
 
-data class GetImageParameter(
+data class GetImagesParameter(
     val page: Int,
     val limit: Int,
 )

@@ -9,6 +9,10 @@
         <import type="android.view.View"/>
 
         <variable
+            name="image"
+            type="com.carrot.gallery.viewer.ImageViewerImage" />
+
+        <variable
             name="viewModel"
             type="com.carrot.gallery.viewer.ImageViewerViewModel" />
 
@@ -32,19 +36,17 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/upper_bar"
             android:layout_width="match_parent"
-            android:layout_height="76dp"
+            android:layout_height="64dp"
             android:background="@color/black_opacity_40"
-            android:paddingTop="24dp"
+            android:visibility="@{viewModel.functionBarToggler? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toTopOf="parent">
-            <!--
-            android:visibility="@{viewModel.functionBarToggler? View.VISIBLE : View.GONE}"-->
 
             <ImageView
                 android:id="@+id/closeButton"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:onClick="@{() -> viewModel.onCloseButtonClick()}"
-                android:padding="16dp"
+                android:padding="24dp"
                 android:src="@drawable/ico_gnb_close"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -55,7 +57,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
-                android:textSize="18dp"
+                android:textSize="@dimen/text_large"
+                android:text="@{image.author}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -67,33 +70,77 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottom_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="136dp"
             android:background="@color/black_opacity_40"
-            android:paddingTop="16dp"
-            android:paddingBottom="51dp"
+            android:visibility="@{viewModel.functionBarToggler? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <!--
-            android:visibility="@{viewModel.bottomFunctionBarEnable &amp;&amp; viewModel.functionBarToggler? View.VISIBLE : View.GONE}"
-            -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/bottom_bar_vertical_guideline"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="100dp" />
 
-            <!--
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/bottom_bar_horizontal_first_guideline"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="56dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/bottom_bar_horizontal_second_guideline"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="112dp" />
+
             <TextView
-                android:id="@+id/image_description"
+                android:id="@+id/bottom_bar_grayscale_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="12dp"
-                android:text="@{viewModel.imageDescriptionText}"
                 android:textColor="@color/white"
-                android:textSize="15dp"
-                android:visibility="@{viewModel.imageDescriptionVisibility ? View.VISIBLE : View.GONE}"
-                tools:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent" /> -->
+                android:textSize="@dimen/text_normal"
+                android:text="@string/image_filter_grayscale"
+                android:layout_marginLeft="@dimen/margin_normal"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_first_guideline"
+                app:layout_constraintLeft_toLeftOf="parent"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/bottom_bar_grayscale_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_normal"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_first_guideline"
+                app:layout_constraintLeft_toRightOf="@id/bottom_bar_vertical_guideline"
+                />
+
+            <TextView
+                android:id="@+id/bottom_bar_blur_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_normal"
+                android:text="@string/image_filter_blur"
+                android:layout_marginLeft="@dimen/margin_normal"
+                app:layout_constraintTop_toBottomOf="@id/bottom_bar_horizontal_first_guideline"
+                app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_second_guideline"
+                app:layout_constraintLeft_toLeftOf="parent"
+                />
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/bottom_bar_blur_seekbar"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_normal"
+                app:layout_constraintTop_toBottomOf="@id/bottom_bar_horizontal_first_guideline"
+                app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_second_guideline"
+                app:layout_constraintLeft_toRightOf="@id/bottom_bar_vertical_guideline"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

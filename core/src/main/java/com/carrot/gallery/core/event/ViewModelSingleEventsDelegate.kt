@@ -17,8 +17,7 @@ interface SingleEventType
  * Single Event 를 SingleLiveEvent 로 구현한다.
  */
 class ViewModelSingleLiveEventsDelegate : ViewModelSingleEventsDelegate {
-    private val singleEvent =
-        SingleLiveEvent<SingleEventType>()
+    private val singleEvent = SingleLiveEvent<SingleEventType>()
 
     override fun observeSingleEvent(
         lifecycleOwner: LifecycleOwner,

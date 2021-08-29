@@ -7,17 +7,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
 /**
  * Created by kyunghoon on 2021-08-29
  */
 @InstallIn(ViewModelComponent::class)
 @Module
-class SingleEventModule {
+class ViewModelScopedModule {
 
     @ViewModelScoped
     @Provides
-    fun provideViewModelSingleEventsDelegate(): ViewModelSingleEventsDelegate =
-        ViewModelSingleLiveEventsDelegate()
+    fun provideViewModelSingleEventsDelegate(): ViewModelSingleEventsDelegate = ViewModelSingleLiveEventsDelegate()
 
 }

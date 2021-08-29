@@ -1,9 +1,9 @@
 package com.carrot.gallery.core.data
 
 import com.carrot.gallery.core.apis.ImageApis
+import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.model.response.ImageResponse
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Created by kyunghoon on 2021-08-27
@@ -24,5 +24,6 @@ class LoremPicksumImageDataSource @Inject constructor(
     override suspend fun getImage(id: Long): ImageResponse {
         return imageApis.getImage(id)
     }
+
 
 }
