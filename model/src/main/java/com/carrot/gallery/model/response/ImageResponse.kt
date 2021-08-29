@@ -1,11 +1,11 @@
-package com.carrot.gallery.model.gallery
+package com.carrot.gallery.model.response
 
 import com.google.gson.annotations.SerializedName
 
 /**
- * Created by kyunghoon on 2021-08
+ * Created by kyunghoon on 2021-08-29
  */
-data class Image(
+data class ImageResponse (
     val id: Long,
     val author: String,
     val width: Int,
@@ -14,5 +14,4 @@ data class Image(
 
     @SerializedName("download_url")
     val downloadUrl: String
-
 )

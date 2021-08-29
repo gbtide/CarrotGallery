@@ -4,13 +4,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.carrot.gallery.widget.CustomSwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.davemorrissey.labs.subscaleview.ImageSource
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import java.util.*
+import com.carrot.gallery.widget.CustomSwipeRefreshLayout
 
 /**
  * Created by kyunghoon on 2021-08
@@ -46,13 +43,13 @@ fun setGlideImage(imageView: ImageView, glideImage: String?, glideCenterInside: 
         .into(imageView)
 }
 
-@BindingAdapter("image")
-fun setImage(imageView: SubsamplingScaleImageView, url: String) {
-//    imageView.setImage(ImageSource.uri(localPath))
-    imageView.setImage(ImageSource.uri(url))
-}
+//@BindingAdapter("image")
+//fun setImage(imageView: SubsamplingScaleImageView, url: String) {
+////    imageView.setImage(ImageSource.uri(localPath))
+//    imageView.setImage(ImageSource.uri(url))
+//}
 
-@BindingAdapter(value = ["formatSeconds", "pattern"])
-fun secondsToDateText(textView: TextView, formatSeconds: Long, pattern: String) {
+@BindingAdapter(value = ["formatSeconds"])
+fun secondsToDateText(textView: TextView, formatSeconds: Long) {
     textView.text = TimeUtils.parseToHHmmss(formatSeconds)
 }

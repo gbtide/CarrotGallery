@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.carrot.gallery.R
+import com.carrot.gallery.core.image.ThumbnailUrlMaker
 import com.carrot.gallery.databinding.ItemGalleryImageBinding
 
 /**
@@ -15,36 +16,42 @@ data class GalleryImage(
 )
 
 class GalleryImageViewBinder(
-    private val imageClickListener: ImageClickListener
+    private val imageClickListener: ImageClickListener,
+    private val thumbnailUrlMaker: ThumbnailUrlMaker
 ) : GalleryItemViewBinder<GalleryImage, GalleryViewHolder>(GalleryImage::class.java) {
 
     override fun createViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         return GalleryViewHolder(
             ItemGalleryImageBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
-            ), imageClickListener
+            ), imageClickListener, thumbnailUrlMaker
         )
     }
 
-    override fun bindViewHolder(model: GalleryImage, viewHolder: GalleryViewHolder) = viewHolder.bind(model)
+    override fun bindViewHolder(model: GalleryImage, viewHolder: GalleryViewHolder) =
+        viewHolder.bind(model)
 
     override fun getItemType(): Int = R.layout.item_gallery_image
 
-    override fun areItemsTheSame(oldItem: GalleryImage, newItem: GalleryImage): Boolean = (oldItem.id == newItem.id)
+    override fun areItemsTheSame(oldItem: GalleryImage, newItem: GalleryImage): Boolean =
+        (oldItem.id == newItem.id)
 
-    override fun areContentsTheSame(oldItem: GalleryImage, newItem: GalleryImage): Boolean = (oldItem == newItem)
+    override fun areContentsTheSame(oldItem: GalleryImage, newItem: GalleryImage): Boolean =
+        (oldItem == newItem)
 
 }
 
 class GalleryViewHolder(
     private val binding: ItemGalleryImageBinding,
-    private val imageClickListener: ImageClickListener
+    private val imageClickListener: ImageClickListener,
+    private val thumbnailUrlMaker: ThumbnailUrlMaker
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(galleryImage: GalleryImage) {
-        binding.galleryColumnCount = GalleryCons.COLUMN_COUNT
         binding.image = galleryImage
+        binding.galleryColumnCount = GalleryCons.COLUMN_COUNT // 개선 포인트
         binding.eventListener = imageClickListener
+        binding.galleryThumbnailUrlMaker = thumbnailUrlMaker
         binding.executePendingBindings()
     }
 

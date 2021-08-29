@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -16,6 +15,10 @@
             type="Integer" />
 
         <variable
+            name="galleryThumbnailUrlMaker"
+            type="com.carrot.gallery.core.image.ThumbnailUrlMaker" />
+
+        <variable
             name="eventListener"
             type="com.carrot.gallery.gallery.ImageClickListener" />
     </data>
@@ -24,10 +27,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:paddingBottom="@dimen/gallery_item_padding_vertical"
-        android:paddingTop="@dimen/gallery_item_padding_vertical"
         android:onClick="@{view -> eventListener.onClickImage(image)}"
-        >
+        android:paddingTop="@dimen/gallery_item_padding_vertical"
+        android:paddingBottom="@dimen/gallery_item_padding_vertical">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_start"
@@ -47,14 +49,14 @@
             android:id="@+id/preview_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:galleryImageUrl="@{image.imageUrl}"
             app:galleryColumnCount="@{galleryColumnCount}"
+            app:galleryImageUrl="@{image.imageUrl}"
+            app:galleryThumbnailUrlMaker="@{galleryThumbnailUrlMaker}"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintStart_toEndOf="@id/guideline_start"
             app:layout_constraintEnd_toStartOf="@id/guideline_end"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline_start"
             app:layout_constraintTop_toBottomOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:layout_width="0dp"
@@ -62,10 +64,10 @@
             android:background="@drawable/thumbnail_boarder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintStart_toEndOf="@id/guideline_start"
             app:layout_constraintEnd_toStartOf="@id/guideline_end"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"/>
+            app:layout_constraintStart_toEndOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

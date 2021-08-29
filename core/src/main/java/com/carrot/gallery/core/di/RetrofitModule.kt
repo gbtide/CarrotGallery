@@ -19,10 +19,6 @@ import javax.inject.Singleton
 @Module
 class RetrofitModule {
 
-//    @Provides
-//    @Singleton
-//    fun provideApis():
-
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient, factory: Converter.Factory): Retrofit {

@@ -1,4 +1,4 @@
-package com.carrot.gallery.util
+package com.carrot.gallery.core.util
 
 import android.content.Context
 import android.content.Context.WINDOW_SERVICE

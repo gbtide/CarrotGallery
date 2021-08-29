@@ -6,9 +6,10 @@ import com.carrot.gallery.core.di.IoDispatcher
 import com.carrot.gallery.core.domain.GetImageParameter
 import com.carrot.gallery.core.domain.GetImagesUseCase
 import com.carrot.gallery.core.result.Result
+import com.carrot.gallery.core.result.successOr
 import com.carrot.gallery.core.util.CollectionUtils
 import com.carrot.gallery.core.util.SingleLiveEvent
-import com.carrot.gallery.model.gallery.Image
+import com.carrot.gallery.model.domain.Image
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -30,13 +31,13 @@ class GalleryViewModel @ViewModelInject constructor(
 
     val images: LiveData<List<Any>>
 
-    private val lastAddedImages = MutableLiveData<List<Any>>()
+    private val currentPage = MutableLiveData<Int>()
 
-    private var isLastPage: LiveData<Boolean> = lastAddedImages.map {
+    private val lastAddedGalleryItems = MutableLiveData<List<Any>>()
+
+    private var isLastPage: LiveData<Boolean> = lastAddedGalleryItems.map {
         CollectionUtils.isEmpty(it) || it.size < ITEM_COUNT_PER_PAGE
     }
-
-    private val currentPage = MutableLiveData<Int>()
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean>
@@ -48,32 +49,43 @@ class GalleryViewModel @ViewModelInject constructor(
     val goToImageViewerAction: LiveData<GalleryImage>
         get() = _goToImageViewerAction
 
-//    val imageResult: LiveData<Result<Image>> = liveData {
-//        emit(getImageUseCase(1))
-//    }
-
     init {
         _isLoading.value = false
 
         images = currentPage.switchMap { page ->
             getImagesUseCase(GetImageParameter(page, ITEM_COUNT_PER_PAGE))
                 .filter {
+                    // 1. Loading
                     if (it is Result.Loading) {
                         _isLoading.value = true
                         return@filter false
                     }
                     true
                 }
-                .map {
-                    if (it is Result.Success) {
-                        lastAddedImages.value = it.data
-                        return@map makeGalleryImagesFrom(it.data, page)
-
-                    } else if (it is Result.Error) {
-                        return@map emptyList<Any>()
-
+                .filter {
+                    // 2. Error
+                    if (it is Result.Error) {
+                        // TODO
+                        return@filter false
                     }
-                    throw IllegalArgumentException("Unknown Status")
+                    true
+                }
+                .filter {
+                    // 3. Empty
+                    if (it is Result.Success) {
+                        if (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(it.data)) {
+                            isEmpty.value = true
+                            return@filter false
+                        }
+                    }
+                    isEmpty.value = false
+                    true
+                }
+                .map {
+                    // 4. Success!
+                    val result = it.successOr(emptyList())
+                    lastAddedGalleryItems.value = result
+                    return@map makeGalleryImagesFrom(result, page)
 
                 }.map {
                     _isLoading.value = false
@@ -103,16 +115,14 @@ class GalleryViewModel @ViewModelInject constructor(
             addedImages
         } else {
             val oldList = images.value!!
-            oldList + addedImages
+            oldList + addedImages   // memo. list reference 새로 생성
         }
     }
 
     fun onReceiveLoadMoreSignal() {
-        Timber.d("#### onReceiveLoadMoreSignal")
         if (isLastPage.value == true || _isLoading.value == true) {
             return
         }
-
         _isLoading.value = true // memo. Result.Loading 로딩 판정보다 onReceiveLoadMoreSignal 재호출이 빠를 수 있어서 추가했습니다.
         requestNextPage()
     }

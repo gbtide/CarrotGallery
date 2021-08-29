@@ -18,22 +18,10 @@
         android:background="@color/black"
         >
 
-        <!--
-        <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        <com.github.chrisbanes.photoview.PhotoView
             android:id="@+id/image_viewer_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:image="@{viewModel.image.downloadUrl}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />-->
-
-        <ImageView
-            android:id="@+id/image_viewer_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:glideImage="@{viewModel.image.downloadUrl}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

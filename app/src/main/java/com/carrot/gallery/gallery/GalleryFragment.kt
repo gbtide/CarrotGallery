@@ -15,12 +15,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carrot.gallery.MainViewModel
 import com.carrot.gallery.R
+import com.carrot.gallery.core.image.ThumbnailUrlMaker
 import com.carrot.gallery.databinding.FragmentGalleryBinding
 import com.carrot.gallery.viewer.ImageViewerFragment
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
 import timber.log.Timber
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -29,6 +31,9 @@ class GalleryFragment : Fragment() {
     private var galleryAdapter: GalleryAdapter? = null
     private val viewModel: GalleryViewModel by viewModels()
     private val mainActivityViewModel: MainViewModel by activityViewModels()
+
+    @Inject
+    lateinit var thumbnailUrlMaker: ThumbnailUrlMaker
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,9 +72,7 @@ class GalleryFragment : Fragment() {
         })
 
         viewModel.images.observe(viewLifecycleOwner, { images ->
-            Timber.d("### result : %s", images)
             showGallery(binding.recyclerviewGallery, images)
-
         })
 
         binding.viewModel = viewModel
@@ -77,22 +80,16 @@ class GalleryFragment : Fragment() {
 
     private fun showGallery(recyclerView: RecyclerView, list: List<Any>?) {
         if (galleryAdapter == null) {
-            val imageViewBinder = GalleryImageViewBinder(viewModel)
+            val imageViewBinder = GalleryImageViewBinder(viewModel, thumbnailUrlMaker)
             val viewBinders: HashMap<Class<out Any>, GalleryItemViewBinder<Any, RecyclerView.ViewHolder>> = HashMap()
+
+            @Suppress("UNCHECKED_CAST")
             viewBinders[imageViewBinder.modelClass] = imageViewBinder as GalleryItemBinder
             galleryAdapter = GalleryAdapter(viewBinders)
         }
         if (recyclerView.adapter == null) {
             recyclerView.apply {
                 adapter = galleryAdapter
-
-                (itemAnimator as DefaultItemAnimator).run {
-                    supportsChangeAnimations = false
-                    addDuration = 160L
-                    moveDuration = 160L
-                    changeDuration = 160L
-                    removeDuration = 120L
-                }
 
                 val lm = GridLayoutManager(context, GalleryCons.COLUMN_COUNT)
                 layoutManager = lm

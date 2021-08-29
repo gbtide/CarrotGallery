@@ -4,11 +4,10 @@ import com.carrot.gallery.core.data.ImageRepository
 import com.carrot.gallery.core.di.IoDispatcher
 import com.carrot.gallery.core.domain.base.FlowUseCase
 import com.carrot.gallery.core.result.Result
-import com.carrot.gallery.model.gallery.Image
+import com.carrot.gallery.model.domain.Image
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import timber.log.Timber
 import javax.inject.Inject
 
 /**

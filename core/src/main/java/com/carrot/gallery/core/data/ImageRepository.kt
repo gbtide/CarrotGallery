@@ -1,6 +1,6 @@
 package com.carrot.gallery.core.data
 
-import com.carrot.gallery.model.gallery.Image
+import com.carrot.gallery.model.domain.Image
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,10 +18,13 @@ class LoremPicksumImageRepository @Inject constructor(
 ) : ImageRepository {
 
     override suspend fun getImages(page: Int, limit: Int): List<Image> {
-        return imageDataSource.getImages(page, limit)
+        val response = imageDataSource.getImages(page, limit)
+        return ImageMapper.fromLoremPicsumImages(response)
     }
 
     override suspend fun getImage(id: Long): Image {
-        return imageDataSource.getImage(id)
+        val response = imageDataSource.getImage(id)
+        return ImageMapper.fromLoremPicsumImage(response)
     }
+
 }

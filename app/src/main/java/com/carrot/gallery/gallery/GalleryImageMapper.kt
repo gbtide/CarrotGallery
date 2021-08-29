@@ -1,7 +1,7 @@
 package com.carrot.gallery.gallery
 
 import com.carrot.gallery.core.util.CollectionUtils
-import com.carrot.gallery.model.gallery.Image
+import com.carrot.gallery.model.domain.Image
 import okhttp3.internal.toImmutableList
 
 /**
@@ -19,16 +19,7 @@ class GalleryImageMapper {
         }
 
         private fun fromImage(image: Image): GalleryImage {
-            val urlRemovedSize = removeImageSizeSegment(image.downloadUrl)
-            return GalleryImage(image.id, urlRemovedSize)
-        }
-
-        private fun removeImageSizeSegment(url: String): String {
-            return removeLastSegment(removeLastSegment(url))
-        }
-
-        private fun removeLastSegment(url: String): String {
-            return url.substring(0, url.lastIndexOf('/'))
+            return GalleryImage(image.id, image.downloadUrl)
         }
 
     }
