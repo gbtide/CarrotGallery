@@ -5,13 +5,13 @@ import com.carrot.gallery.core.image.ThumbnailUrlMaker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
  * Created by kyunghoon on 2021-08-29
  */
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
 class UtilsModule {
 

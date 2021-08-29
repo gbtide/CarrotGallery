@@ -26,9 +26,4 @@ class GetImageUseCase @Inject constructor(
             emit(Result.Error(e))
         }
     }
-
-    //    override suspend fun execute(id: Int): Image {
-//        return imageRepository.getImage(id)
-//    }
-
 }

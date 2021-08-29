@@ -12,7 +12,6 @@ interface ImageRepository {
     suspend fun getImage(id: Long): Image
 }
 
-@Singleton
 class LoremPicksumImageRepository @Inject constructor(
     private val imageDataSource: ImageDataSource
 ) : ImageRepository {

@@ -13,7 +13,6 @@ interface ImageDataSource {
     suspend fun getImage(id: Long): ImageResponse
 }
 
-@Singleton
 class LoremPicksumImageDataSource @Inject constructor(
     private val imageApis: ImageApis
 ) : ImageDataSource {

@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.view.View"/>
+
         <variable
             name="viewModel"
             type="com.carrot.gallery.viewer.ImageViewerViewModel" />
@@ -26,6 +28,74 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/upper_bar"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:background="@color/black_opacity_40"
+            android:paddingTop="24dp"
+            app:layout_constraintTop_toTopOf="parent">
+            <!--
+            android:visibility="@{viewModel.functionBarToggler? View.VISIBLE : View.GONE}"-->
+
+            <ImageView
+                android:id="@+id/closeButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="@{() -> viewModel.onCloseButtonClick()}"
+                android:padding="16dp"
+                android:src="@drawable/ico_gnb_close"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/indexTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1/5" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black_opacity_40"
+            android:paddingTop="16dp"
+            android:paddingBottom="51dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!--
+            android:visibility="@{viewModel.bottomFunctionBarEnable &amp;&amp; viewModel.functionBarToggler? View.VISIBLE : View.GONE}"
+            -->
+
+            <!--
+            <TextView
+                android:id="@+id/image_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="12dp"
+                android:text="@{viewModel.imageDescriptionText}"
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                android:visibility="@{viewModel.imageDescriptionVisibility ? View.VISIBLE : View.GONE}"
+                tools:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent" /> -->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ProgressBar
             android:id="@+id/loading"

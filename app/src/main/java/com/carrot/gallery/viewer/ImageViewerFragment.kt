@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -17,6 +18,7 @@ import com.bumptech.glide.request.target.Target
 import com.carrot.gallery.core.image.ThumbnailUrlMaker
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -99,6 +101,14 @@ class ImageViewerFragment : Fragment() {
             }
 
         })
+
+        viewModel.observeSingleEvent(viewLifecycleOwner) {
+            when (it) {
+                is ImageViewerSingleEventType.ClickCloseButton -> {
+                    findNavController().popBackStack()
+                }
+            }
+        }
 
         binding.viewModel = viewModel
     }

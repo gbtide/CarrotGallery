@@ -1,4 +1,4 @@
-package com.carrot.gallery.core.util;
+package com.carrot.gallery.core.event;
 
 import android.util.Log;
 

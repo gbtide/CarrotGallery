@@ -1,25 +1,26 @@
 package com.carrot.gallery.gallery
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.carrot.gallery.core.di.IoDispatcher
 import com.carrot.gallery.core.domain.GetImageParameter
 import com.carrot.gallery.core.domain.GetImagesUseCase
+import com.carrot.gallery.core.event.SingleLiveEvent
 import com.carrot.gallery.core.result.Result
 import com.carrot.gallery.core.result.successOr
 import com.carrot.gallery.core.util.CollectionUtils
-import com.carrot.gallery.core.util.SingleLiveEvent
 import com.carrot.gallery.model.domain.Image
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by kyunghoon on 2021-08
  */
-class GalleryViewModel @ViewModelInject constructor(
+@HiltViewModel
+class GalleryViewModel @Inject constructor(
     private val getImagesUseCase: GetImagesUseCase,
     @IoDispatcher private val idDispatcher: CoroutineDispatcher
 ) : ViewModel(), ImageClickListener {
@@ -45,7 +46,8 @@ class GalleryViewModel @ViewModelInject constructor(
 
     val isEmpty = MutableLiveData<Boolean>()
 
-    private val _goToImageViewerAction = SingleLiveEvent<GalleryImage>()
+    private val _goToImageViewerAction =
+        SingleLiveEvent<GalleryImage>()
     val goToImageViewerAction: LiveData<GalleryImage>
         get() = _goToImageViewerAction
 

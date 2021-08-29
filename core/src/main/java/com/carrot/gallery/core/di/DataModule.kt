@@ -8,16 +8,16 @@ import com.carrot.gallery.core.data.LoremPicksumImageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
 /**
  * Created by kyunghoon on 2021-08-27
  */
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
-class ImageDataModule {
+class DataModule {
 
     @Singleton
     @Provides
