@@ -16,7 +16,7 @@ data class GalleryImage(
 )
 
 class GalleryImageViewBinder(
-    private val imageClickListener: ImageClickListener,
+    private val galleryItemClickListener: GalleryItemClickListener,
     private val imageUrlMaker: ImageUrlMaker
 ) : GalleryItemViewBinder<GalleryImage, GalleryViewHolder>(GalleryImage::class.java) {
 
@@ -24,7 +24,7 @@ class GalleryImageViewBinder(
         return GalleryViewHolder(
             ItemGalleryImageBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
-            ), imageClickListener, imageUrlMaker
+            ), galleryItemClickListener, imageUrlMaker
         )
     }
 
@@ -43,14 +43,14 @@ class GalleryImageViewBinder(
 
 class GalleryViewHolder(
     private val binding: ItemGalleryImageBinding,
-    private val imageClickListener: ImageClickListener,
+    private val galleryItemClickListener: GalleryItemClickListener,
     private val imageUrlMaker: ImageUrlMaker
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(galleryImage: GalleryImage) {
         binding.image = galleryImage
         binding.galleryColumnCount = GalleryCons.COLUMN_COUNT // 개선 포인트
-        binding.eventListener = imageClickListener
+        binding.eventListener = galleryItemClickListener
         binding.galleryThumbnailUrlMaker = imageUrlMaker
         binding.executePendingBindings()
     }

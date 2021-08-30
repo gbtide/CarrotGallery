@@ -16,6 +16,10 @@
     <color name="black">#000</color>
     <color name="transparent">#0fff</color>
     <color name="black_opacity_40">#66000000</color>
+    <color name="black_opacity_50">#80000000</color>
+    <color name="white_opacity_40">#66ffffff</color>
+    <color name="white_opacity_50">#80ffffff</color>
+    <color name="white_opacity_60">#99ffffff</color>
 
     <!-- 스와이프 동글뱅이 -->
     <integer-array name="swipe_refresh">
@@ -28,5 +32,10 @@
 
     <color name="color_control_medium">#aaffffff</color>
     <color name="color_control_light">#39000000</color>
+
+    <!-- dark mode -->
+    <color name="tc01">@color/black</color>
+    <color name="bt06">@color/black_opacity_40</color>
+    <color name="bg06">@color/white_opacity_40</color>
 
 </resources>

@@ -6,7 +6,7 @@
 
     <data>
 
-        <import type="android.view.View"/>
+        <import type="android.view.View" />
 
         <variable
             name="image"
@@ -21,8 +21,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
-        >
+        android:background="@color/black">
 
         <com.github.chrisbanes.photoview.PhotoView
             android:id="@+id/image_viewer_view"
@@ -56,9 +55,9 @@
                 android:id="@+id/indexTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{image.author}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_large"
-                android:text="@{image.author}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -100,14 +99,13 @@
                 android:id="@+id/bottom_bar_grayscale_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:text="@string/image_filter_grayscale"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_normal"
-                android:text="@string/image_filter_grayscale"
-                android:layout_marginLeft="@dimen/margin_normal"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_first_guideline"
                 app:layout_constraintLeft_toLeftOf="parent"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/bottom_bar_grayscale_switch"
@@ -116,36 +114,33 @@
                 android:layout_marginLeft="@dimen/margin_normal"
                 android:enabled="@{viewModel.enableFilterEffect}"
                 android:theme="@style/Widget.CarrotGallery.ImageViewerSwitch"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_first_guideline"
                 app:layout_constraintLeft_toRightOf="@id/bottom_bar_vertical_guideline"
-                tools:checked="true"
-                />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:checked="true" />
 
             <TextView
                 android:id="@+id/bottom_bar_blur_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:text="@string/image_filter_blur"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_normal"
-                android:text="@string/image_filter_blur"
-                android:layout_marginLeft="@dimen/margin_normal"
-                app:layout_constraintTop_toBottomOf="@id/bottom_bar_horizontal_first_guideline"
                 app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_second_guideline"
                 app:layout_constraintLeft_toLeftOf="parent"
-                />
+                app:layout_constraintTop_toBottomOf="@id/bottom_bar_horizontal_first_guideline" />
 
             <androidx.appcompat.widget.AppCompatSeekBar
-                style="@style/Widget.CarrotGallery.ImageViewerSeekBar"
                 android:id="@+id/bottom_bar_blur_seekbar"
+                style="@style/Widget.CarrotGallery.ImageViewerSeekBar"
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_normal"
                 android:enabled="@{viewModel.enableFilterEffect}"
-                app:layout_constraintTop_toBottomOf="@id/bottom_bar_horizontal_first_guideline"
                 app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_second_guideline"
                 app:layout_constraintLeft_toRightOf="@id/bottom_bar_vertical_guideline"
-                />
+                app:layout_constraintTop_toBottomOf="@id/bottom_bar_horizontal_first_guideline" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -154,28 +149,27 @@
             android:layout_width="match_parent"
             android:layout_height="88dp"
             android:layout_gravity="center"
-            android:text="@string/error_and_retry_message"
-            android:textSize="@dimen/text_normal"
-            android:textColor="@color/white"
-            android:gravity="center"
             android:background="@color/black_opacity_40"
+            android:gravity="center"
+            android:text="@string/error_and_retry_message"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_normal"
             android:visibility="@{viewModel.errorViewShown? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
             android:id="@+id/loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            app:goneUnless="@{viewModel.isLoading}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:goneUnless="@{viewModel.isLoading}" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

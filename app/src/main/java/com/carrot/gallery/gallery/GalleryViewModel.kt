@@ -4,10 +4,13 @@ import androidx.lifecycle.*
 import com.carrot.gallery.core.di.IoDispatcher
 import com.carrot.gallery.core.domain.GetImagesParameter
 import com.carrot.gallery.core.domain.GetImagesUseCase
+import com.carrot.gallery.core.event.SingleEventType
 import com.carrot.gallery.core.event.SingleLiveEvent
+import com.carrot.gallery.core.event.ViewModelSingleEventsDelegate
 import com.carrot.gallery.core.result.Result
 import com.carrot.gallery.core.result.successOr
 import com.carrot.gallery.core.util.CollectionUtils
+import com.carrot.gallery.core.util.combine
 import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -21,9 +24,10 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
+    @IoDispatcher private val idDispatcher: CoroutineDispatcher,
     private val getImagesUseCase: GetImagesUseCase,
-    @IoDispatcher private val idDispatcher: CoroutineDispatcher
-) : ViewModel(), ImageClickListener {
+    private val singleEventDelegate: ViewModelSingleEventsDelegate,
+) : ViewModel(), GalleryItemClickListener, ViewModelSingleEventsDelegate by singleEventDelegate {
 
     companion object {
         private const val FIRST_IMAGE_PAGE_NO = 1
@@ -34,66 +38,38 @@ class GalleryViewModel @Inject constructor(
 
     private val currentPage = MutableLiveData<Int>()
 
-    private val lastAddedGalleryItems = MutableLiveData<List<Any>>()
+    private val lastAddedItems = MutableLiveData<List<Any>>()
 
-    private var isLastPage: LiveData<Boolean> = lastAddedGalleryItems.map {
+    private var isLastPage: LiveData<Boolean> = lastAddedItems.map {
         CollectionUtils.isEmpty(it) || it.size < ITEM_COUNT_PER_PAGE
     }
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
+    private val dataFlowStatus = MutableLiveData<Result<*>>()
+    val isLoading = dataFlowStatus.map { it is Result.Loading }
 
+    val errorViewShown = dataFlowStatus.map { it is Result.Error }
     val isEmpty = MutableLiveData<Boolean>()
 
-    private val _goToImageViewerAction =
-        SingleLiveEvent<GalleryImage>()
-    val goToImageViewerAction: LiveData<GalleryImage>
-        get() = _goToImageViewerAction
-
     init {
-        _isLoading.value = false
-
         images = currentPage.switchMap { page ->
             getImagesUseCase(GetImagesParameter(page, ITEM_COUNT_PER_PAGE))
-                .filter {
-                    // 1. Loading
-                    if (it is Result.Loading) {
-                        _isLoading.value = true
-                        return@filter false
-                    }
-                    true
+                .map {
+                    dataFlowStatus.value = it
+                    it
                 }
+                .filter { it !is Result.Loading }
+                .filter { it !is Result.Error }
                 .filter {
-                    // 2. Error
-                    if (it is Result.Error) {
-                        // TODO
-                        return@filter false
-                    }
-                    true
-                }
-                .filter {
-                    // 3. Empty
-                    if (it is Result.Success) {
-                        if (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(it.data)) {
-                            isEmpty.value = true
-                            return@filter false
-                        }
-                    }
-                    isEmpty.value = false
-                    true
+                    val emptyFromFirstPage = it is Result.Success && (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(it.data))
+                    isEmpty.value = emptyFromFirstPage
+                    return@filter !emptyFromFirstPage
                 }
                 .map {
-                    // 4. Success!
                     val result = it.successOr(emptyList())
-                    lastAddedGalleryItems.value = result
+                    lastAddedItems.value = result
                     return@map makeGalleryImagesFrom(result, page)
 
-                }.map {
-                    _isLoading.value = false
-                    return@map it
-                }
-                .asLiveData()
+                }.asLiveData()
         }
 
         requestFirstPage()
@@ -122,10 +98,12 @@ class GalleryViewModel @Inject constructor(
     }
 
     fun onReceiveLoadMoreSignal() {
-        if (isLastPage.value == true || _isLoading.value == true) {
+        if (isLastPage.value == true || isLoading.value == true) {
             return
         }
-        _isLoading.value = true // memo. Result.Loading 로딩 판정보다 onReceiveLoadMoreSignal 재호출이 빠를 수 있어서 추가했습니다.
+
+        // memo. usecase 의 Result.Loading 로딩 판정보다 onReceiveLoadMoreSignal 재호출이 빠를 수 있어서 추가했습니다.
+        dataFlowStatus.value = Result.Loading
         requestNextPage()
     }
 
@@ -134,10 +112,14 @@ class GalleryViewModel @Inject constructor(
     }
 
     override fun onClickImage(image: GalleryImage) {
-        _goToImageViewerAction.value = image
+        notifySingleEvent(GallerySingleEventType.GoToImageViewer(image))
     }
 }
 
-interface ImageClickListener {
+interface GalleryItemClickListener {
     fun onClickImage(image: GalleryImage)
+}
+
+sealed class GallerySingleEventType : SingleEventType {
+    data class GoToImageViewer(val image: GalleryImage) : GallerySingleEventType()
 }

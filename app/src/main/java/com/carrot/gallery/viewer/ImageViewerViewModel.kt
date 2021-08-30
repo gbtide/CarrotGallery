@@ -56,21 +56,15 @@ class ImageViewerViewModel @Inject constructor(
         imageUrlMaker.addFilterEffectParam(_baseUrl, _blurVal, _grayscaleVal)
     }
 
-    val isLoading = dataFlowStatus.map {
-        it is Result.Loading
-    }
+    val isLoading = dataFlowStatus.map { it is Result.Loading }
 
-    val errorViewShown = dataFlowStatus.map {
-        it is Result.Error
-    }
+    val errorViewShown = dataFlowStatus.map { it is Result.Error }
 
     private val _functionBarToggler = MutableLiveData<Boolean>()
     val functionBarToggler: LiveData<Boolean>
         get() = _functionBarToggler
 
-    val enableFilterEffect = isLoading.map {
-        !it
-    }
+    val enableFilterEffect = isLoading.map { !it }
 
     private val seekbarEventPublisher: PublishSubject<Int> = PublishSubject.create()
     private val disposable = CompositeDisposable()

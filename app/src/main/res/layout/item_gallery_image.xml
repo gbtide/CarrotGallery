@@ -20,7 +20,7 @@
 
         <variable
             name="eventListener"
-            type="com.carrot.gallery.gallery.ImageClickListener" />
+            type="com.carrot.gallery.gallery.GalleryItemClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

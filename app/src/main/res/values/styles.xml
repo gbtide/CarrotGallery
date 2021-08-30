@@ -8,10 +8,26 @@
         <item name="android:elevation">8dp</item>
     </style>
 
-    <!-- 리스트 빈 화면 나올 때 -->
+    <!-- 리스트 빈 화면 나올 때 : TextView 용 -->
     <style name="Widget.CarrotGallery.EmptyResults">
-        <item name="android:drawablePadding">@dimen/margin_normal</item>
-        <item name="android:drawableTop">@drawable/ic_empty_mark</item>
+        <item name="android:paddingTop">@dimen/margin_small</item>
+        <item name="android:paddingBottom">@dimen/margin_normal</item>
+        <item name="android:background">@color/bg06</item>
+        <item name="android:textColor">@color/tc01</item>
+        <item name="android:drawablePadding">@dimen/margin_small</item>
+        <item name="android:drawableTop">@drawable/ic_nav_list</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+    </style>
+
+    <!-- 에러 화면 나올 때 : TextView 용 -->
+    <style name="Widget.CarrotGallery.ErrorResults">
+        <item name="android:paddingTop">@dimen/margin_small</item>
+        <item name="android:paddingBottom">@dimen/margin_normal</item>
+        <item name="android:background">@color/bg06</item>
+        <item name="android:textColor">@color/tc01</item>
+        <item name="android:drawablePadding">@dimen/margin_small</item>
+        <item name="android:drawableTop">@drawable/ic_nav_info</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:textAppearance">?android:textAppearanceMedium</item>
     </style>

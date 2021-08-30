@@ -1,6 +1,7 @@
 package com.carrot.gallery.gallery
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,18 +21,25 @@ import com.carrot.gallery.viewer.ImageViewerFragment
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
+import timber.log.Timber
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class GalleryFragment : Fragment() {
     private lateinit var binding: FragmentGalleryBinding
-    private var galleryAdapter: GalleryAdapter? = null
     private val viewModel: GalleryViewModel by viewModels()
     private val mainActivityViewModel: MainViewModel by activityViewModels()
+    private var galleryAdapter: GalleryAdapter? = null
 
     @Inject
     lateinit var imageUrlMaker: ImageUrlMaker
+
+    /**
+     * TODO 네비게이션 BACK 을 쓰면 layoutManagerState를 항상 관리해줘야하나..
+     * 그렇지 않을 것 같다. 찾아보자.
+     */
+    private var layoutManagerState: Parcelable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,19 +68,23 @@ class GalleryFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel.goToImageViewerAction.observe(viewLifecycleOwner, { image ->
-            val bundle = bundleOf(ImageViewerFragment.IMAGE_ID to image.id)
-            findNavController().navigate(R.id.to_image_viewer, bundle)
-        })
+        viewModel.observeSingleEvent(viewLifecycleOwner) {
+            when (it) {
+                is GallerySingleEventType.GoToImageViewer -> {
+                    val bundle = bundleOf(ImageViewerFragment.IMAGE_ID to it.image.id)
+                    findNavController().navigate(R.id.to_image_viewer, bundle)
+                }
+            }
+        }
 
         viewModel.images.observe(viewLifecycleOwner, { images ->
-            showGallery(binding.galleryRecyclerview, images)
+            addToGallery(binding.galleryRecyclerview, images)
         })
 
         binding.viewModel = viewModel
     }
 
-    private fun showGallery(recyclerView: RecyclerView, list: List<Any>?) {
+    private fun addToGallery(recyclerView: RecyclerView, list: List<Any>?) {
         if (galleryAdapter == null) {
             val imageViewBinder = GalleryImageViewBinder(viewModel, imageUrlMaker)
             val viewBinders: HashMap<Class<out Any>, GalleryItemViewBinder<Any, RecyclerView.ViewHolder>> = HashMap()
@@ -89,8 +101,11 @@ class GalleryFragment : Fragment() {
                         viewModel.onReceiveLoadMoreSignal()
                     }
                 })
-
             }
+            layoutManagerState?.let {
+                binding.galleryRecyclerview.layoutManager?.onRestoreInstanceState(layoutManagerState)
+            }
+
         }
         (recyclerView.adapter as GalleryAdapter).submitList(list?.toImmutableList() ?: emptyList())
 
@@ -103,6 +118,19 @@ class GalleryFragment : Fragment() {
             // activity, so there is no need to add dedupping logic to the app.
             activity?.reportFullyDrawn()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        layoutManagerState = binding.galleryRecyclerview.layoutManager?.onSaveInstanceState()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
 }
