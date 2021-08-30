@@ -10,18 +10,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carrot.gallery.MainViewModel
 import com.carrot.gallery.R
-import com.carrot.gallery.core.image.ThumbnailUrlMaker
+import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.databinding.FragmentGalleryBinding
 import com.carrot.gallery.viewer.ImageViewerFragment
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -33,7 +31,7 @@ class GalleryFragment : Fragment() {
     private val mainActivityViewModel: MainViewModel by activityViewModels()
 
     @Inject
-    lateinit var thumbnailUrlMaker: ThumbnailUrlMaker
+    lateinit var imageUrlMaker: ImageUrlMaker
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,7 +78,7 @@ class GalleryFragment : Fragment() {
 
     private fun showGallery(recyclerView: RecyclerView, list: List<Any>?) {
         if (galleryAdapter == null) {
-            val imageViewBinder = GalleryImageViewBinder(viewModel, thumbnailUrlMaker)
+            val imageViewBinder = GalleryImageViewBinder(viewModel, imageUrlMaker)
             val viewBinders: HashMap<Class<out Any>, GalleryItemViewBinder<Any, RecyclerView.ViewHolder>> = HashMap()
 
             @Suppress("UNCHECKED_CAST")

@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.carrot.gallery.R
-import com.carrot.gallery.core.image.ThumbnailUrlMaker
+import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.databinding.ItemGalleryImageBinding
 
 /**
@@ -17,14 +17,14 @@ data class GalleryImage(
 
 class GalleryImageViewBinder(
     private val imageClickListener: ImageClickListener,
-    private val thumbnailUrlMaker: ThumbnailUrlMaker
+    private val imageUrlMaker: ImageUrlMaker
 ) : GalleryItemViewBinder<GalleryImage, GalleryViewHolder>(GalleryImage::class.java) {
 
     override fun createViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         return GalleryViewHolder(
             ItemGalleryImageBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
-            ), imageClickListener, thumbnailUrlMaker
+            ), imageClickListener, imageUrlMaker
         )
     }
 
@@ -44,14 +44,14 @@ class GalleryImageViewBinder(
 class GalleryViewHolder(
     private val binding: ItemGalleryImageBinding,
     private val imageClickListener: ImageClickListener,
-    private val thumbnailUrlMaker: ThumbnailUrlMaker
+    private val imageUrlMaker: ImageUrlMaker
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(galleryImage: GalleryImage) {
         binding.image = galleryImage
         binding.galleryColumnCount = GalleryCons.COLUMN_COUNT // 개선 포인트
         binding.eventListener = imageClickListener
-        binding.galleryThumbnailUrlMaker = thumbnailUrlMaker
+        binding.galleryThumbnailUrlMaker = imageUrlMaker
         binding.executePendingBindings()
     }
 

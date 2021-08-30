@@ -5,7 +5,7 @@ import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.carrot.gallery.core.image.ThumbnailUrlMaker
+import com.carrot.gallery.core.image.ImageUrlMaker
 
 /**
  * Created by kyunghoon on 2021-08-28
@@ -16,9 +16,9 @@ fun loadGalleryImageAtGrid(
     imageView: ImageView,
     galleryImageUrl: String,
     galleryColumnCount: Int,
-    galleryThumbnailUrlMaker: ThumbnailUrlMaker
+    galleryImageUrlMaker: ImageUrlMaker
 ) {
-    val imageUrl = galleryThumbnailUrlMaker.makeSquareImageUrlAdjustDevice(
+    val imageUrl = galleryImageUrlMaker.addSquareSizeInGridParam(
         galleryImageUrl,
         galleryColumnCount
     )

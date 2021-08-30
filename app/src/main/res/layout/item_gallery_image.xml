@@ -16,7 +16,7 @@
 
         <variable
             name="galleryThumbnailUrlMaker"
-            type="com.carrot.gallery.core.image.ThumbnailUrlMaker" />
+            type="com.carrot.gallery.core.image.ImageUrlMaker" />
 
         <variable
             name="eventListener"

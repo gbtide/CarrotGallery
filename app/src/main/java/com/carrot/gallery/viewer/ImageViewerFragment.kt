@@ -1,5 +1,6 @@
 package com.carrot.gallery.viewer
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,13 @@ import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,14 +68,14 @@ class ImageViewerFragment : Fragment() {
             viewModel.onSingleTabImageEvent()
         }
 
-        binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener(object: CompoundButton.OnCheckedChangeListener {
+        binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
                 viewModel.onChangeGrayscaleEffect(isChecked)
             }
         })
 
         binding.bottomBarBlurSeekbar.max = ImageCons.BLUR_FILTER_MAX_VALUE
-        binding.bottomBarBlurSeekbar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+        binding.bottomBarBlurSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 viewModel.onChangeBlurEffect(progress)
             }
@@ -87,9 +95,27 @@ class ImageViewerFragment : Fragment() {
             binding.executePendingBindings()
         })
 
-        viewModel.imageResource.observe(viewLifecycleOwner, { imageResource ->
-            binding.imageViewerView.setImageBitmap(imageResource)
-        })
+        viewModel.imageUrl.observe(viewLifecycleOwner) { url ->
+            viewModel.onStartLoadImageToView()
+
+            Glide.with(binding.imageViewerView.context)
+                .load(url)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                        viewModel.onFailureLoadImageToView()
+                        return true
+                    }
+
+                    override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                        viewModel.onSuccessLoadImageToView()
+                        return false
+                    }
+                })
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .transition(DrawableTransitionOptions.withCrossFade(100))
+                .into(binding.imageViewerView)
+        }
+
 
         viewModel.observeSingleEvent(viewLifecycleOwner) {
             when (it) {

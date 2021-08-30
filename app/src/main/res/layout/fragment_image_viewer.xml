@@ -114,9 +114,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_normal"
+                android:enabled="@{viewModel.enableFilterEffect}"
+                android:theme="@style/Widget.CarrotGallery.ImageViewerSwitch"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_first_guideline"
                 app:layout_constraintLeft_toRightOf="@id/bottom_bar_vertical_guideline"
+                tools:checked="true"
                 />
 
             <TextView
@@ -133,10 +136,12 @@
                 />
 
             <androidx.appcompat.widget.AppCompatSeekBar
+                style="@style/Widget.CarrotGallery.ImageViewerSeekBar"
                 android:id="@+id/bottom_bar_blur_seekbar"
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_normal"
+                android:enabled="@{viewModel.enableFilterEffect}"
                 app:layout_constraintTop_toBottomOf="@id/bottom_bar_horizontal_first_guideline"
                 app:layout_constraintBottom_toTopOf="@id/bottom_bar_horizontal_second_guideline"
                 app:layout_constraintLeft_toRightOf="@id/bottom_bar_vertical_guideline"
