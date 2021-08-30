@@ -19,7 +19,6 @@ interface ImageUrlMaker {
      */
     fun addSquareSizeInGridParam(url: String, columnCount: Int): String
 
-
     /**
      * 필터 이펙트 파라미터를 붙여줍니다.
      */

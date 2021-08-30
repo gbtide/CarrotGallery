@@ -1,22 +1,17 @@
 package com.carrot.gallery.viewer
 
-import android.content.Context
 import androidx.lifecycle.*
 import com.carrot.gallery.core.domain.GetImageUseCase
 import com.carrot.gallery.core.event.SingleEventType
 import com.carrot.gallery.core.event.ViewModelSingleEventsDelegate
 import com.carrot.gallery.core.image.ImageUrlMaker
-import com.carrot.gallery.core.result.Result
-import com.carrot.gallery.core.result.data
-import com.carrot.gallery.core.result.succeeded
+import com.carrot.gallery.core.result.*
 import com.carrot.gallery.core.util.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.subjects.PublishSubject
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -26,7 +21,6 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ImageViewerViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val getImageUseCase: GetImageUseCase,
     private val imageUrlMaker: ImageUrlMaker,
     private val singleEventDelegate: ViewModelSingleEventsDelegate,
@@ -36,51 +30,45 @@ class ImageViewerViewModel @Inject constructor(
     }
 
     private val id = MutableLiveData<Long>()
+    private val dataFlowStatus = MutableLiveData<Result<*>>()
 
     val image = id.switchMap { _id ->
         getImageUseCase(_id)
-            .filter {
-                // 1. Loading
-                if (it is Result.Loading) {
-                    _isLoading.value = true
-                    return@filter false
-                }
-                true
-            }
-            .filter {
-                // 2. Error
-                if (it is Result.Error || !it.succeeded) {
-                    // TODO
-                    return@filter false
-                }
-                true
-            }
             .map {
-                // 3. Success!
+                dataFlowStatus.value = it
+                it
+            }
+            .filter { it !is Result.Loading }
+            .filter { it !is Result.Error }
+            .map {
                 val imageViewerImage = ImageViewerImageMapper.fromImage(it.data!!)
-                baseUrl.value = imageUrlMaker.addAdjustSizeParam(imageViewerImage.url, imageViewerImage.width, imageViewerImage.height)
+                baseImageUrl.value = imageUrlMaker.addAdjustSizeParam(imageViewerImage.url, imageViewerImage.width, imageViewerImage.height)
                 return@map imageViewerImage
 
             }.asLiveData()
     }
 
-    private val baseUrl = MutableLiveData<String>()
+    private val baseImageUrl = MutableLiveData<String>()
     private val blurValue = MutableLiveData<Int>()
     private val useGrayscale = MutableLiveData<Boolean>()
 
-    val imageUrl = baseUrl.combine(blurValue, useGrayscale) { _baseUrl, _blurVal, _grayscaleVal ->
+    val imageUrl = baseImageUrl.combine(blurValue, useGrayscale) { _baseUrl, _blurVal, _grayscaleVal ->
         imageUrlMaker.addFilterEffectParam(_baseUrl, _blurVal, _grayscaleVal)
     }
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
+    val isLoading = dataFlowStatus.map {
+        it is Result.Loading
+    }
+
+    val errorViewShown = dataFlowStatus.map {
+        it is Result.Error
+    }
 
     private val _functionBarToggler = MutableLiveData<Boolean>()
     val functionBarToggler: LiveData<Boolean>
         get() = _functionBarToggler
 
-    val enableFilterEffect = _isLoading.map {
+    val enableFilterEffect = isLoading.map {
         !it
     }
 
@@ -124,15 +112,15 @@ class ImageViewerViewModel @Inject constructor(
     }
 
     fun onStartLoadImageToView() {
-        _isLoading.value = true
+        dataFlowStatus.value = Result.Loading
     }
 
     fun onSuccessLoadImageToView() {
-        _isLoading.value = false
+        dataFlowStatus.value = Result.createEmptySuccess()
     }
 
-    fun onFailureLoadImageToView() {
-        _isLoading.value = false
+    fun onFailureLoadImageToView(e: Throwable) {
+        dataFlowStatus.value = Result.Error(e)
     }
 
     override fun onCleared() {

@@ -1,11 +1,11 @@
 package com.carrot.gallery.viewer
 
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,9 +14,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.Transition
 import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,15 +65,9 @@ class ImageViewerFragment : Fragment() {
     }
 
     private fun initView() {
-        binding.imageViewerView.setOnPhotoTapListener { _, _, _ ->
-            viewModel.onSingleTabImageEvent()
-        }
+        binding.imageViewerView.setOnPhotoTapListener { _, _, _ -> viewModel.onSingleTabImageEvent() }
 
-        binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
-            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                viewModel.onChangeGrayscaleEffect(isChecked)
-            }
-        })
+        binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener { _, isChecked -> viewModel.onChangeGrayscaleEffect(isChecked) }
 
         binding.bottomBarBlurSeekbar.max = ImageCons.BLUR_FILTER_MAX_VALUE
         binding.bottomBarBlurSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -98,24 +93,31 @@ class ImageViewerFragment : Fragment() {
         viewModel.imageUrl.observe(viewLifecycleOwner) { url ->
             viewModel.onStartLoadImageToView()
 
+            // memo. blink 이슈로 .into(binding.imageViewerView) 를 쓰지 않았습니다.
             Glide.with(binding.imageViewerView.context)
+                .asBitmap()
                 .load(url)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                        viewModel.onFailureLoadImageToView()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .listener(object : RequestListener<Bitmap> {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                        viewModel.onFailureLoadImageToView(e ?: GlideException("Unknown Glide Exception"))
                         return true
                     }
 
-                    override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        viewModel.onSuccessLoadImageToView()
+                    override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
                         return false
                     }
                 })
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .transition(DrawableTransitionOptions.withCrossFade(100))
-                .into(binding.imageViewerView)
-        }
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
+                        viewModel.onSuccessLoadImageToView()
+                        binding.imageViewerView.setImageBitmap(bitmap)
+                    }
 
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+                })
+        }
 
         viewModel.observeSingleEvent(viewLifecycleOwner) {
             when (it) {

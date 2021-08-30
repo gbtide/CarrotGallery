@@ -21,7 +21,10 @@ class GetImageUseCase @Inject constructor(
     override fun execute(id: Long): Flow<Result<Image>> = flow {
         try {
             emit(Result.Loading)
-            emit(Result.Success(imageRepository.getImage(id)))
+
+            val result = imageRepository.getImage(id)
+            emit(Result.Success(result))
+
         } catch (e: Exception) {
             emit(Result.Error(e))
         }

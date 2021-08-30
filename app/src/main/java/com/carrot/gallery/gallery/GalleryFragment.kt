@@ -33,12 +33,9 @@ class GalleryFragment : Fragment() {
     @Inject
     lateinit var imageUrlMaker: ImageUrlMaker
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        arguments?.let {
-        }
+        arguments?.let {}
     }
 
     override fun onCreateView(
@@ -50,7 +47,6 @@ class GalleryFragment : Fragment() {
                 lifecycleOwner = viewLifecycleOwner
             }
         binding.lifecycleOwner = this
-
         return binding.root
     }
 
@@ -70,7 +66,7 @@ class GalleryFragment : Fragment() {
         })
 
         viewModel.images.observe(viewLifecycleOwner, { images ->
-            showGallery(binding.recyclerviewGallery, images)
+            showGallery(binding.galleryRecyclerview, images)
         })
 
         binding.viewModel = viewModel
@@ -80,7 +76,6 @@ class GalleryFragment : Fragment() {
         if (galleryAdapter == null) {
             val imageViewBinder = GalleryImageViewBinder(viewModel, imageUrlMaker)
             val viewBinders: HashMap<Class<out Any>, GalleryItemViewBinder<Any, RecyclerView.ViewHolder>> = HashMap()
-
             @Suppress("UNCHECKED_CAST")
             viewBinders[imageViewBinder.modelClass] = imageViewBinder as GalleryItemBinder
             galleryAdapter = GalleryAdapter(viewBinders)
@@ -88,10 +83,7 @@ class GalleryFragment : Fragment() {
         if (recyclerView.adapter == null) {
             recyclerView.apply {
                 adapter = galleryAdapter
-
-                val lm = GridLayoutManager(context, GalleryCons.COLUMN_COUNT)
-                layoutManager = lm
-
+                layoutManager = GridLayoutManager(context, GalleryCons.COLUMN_COUNT)
                 addOnScrollListener(object : GridLoadMoreListener() {
                     override fun onLoadMore() {
                         viewModel.onReceiveLoadMoreSignal()

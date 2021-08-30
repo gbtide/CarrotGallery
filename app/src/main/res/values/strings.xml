@@ -3,6 +3,8 @@
     <string name="title_main">Gallery</string>
     <string name="picker_image_empty">No images found.</string>
 
+    <string name="error_and_retry_message">An error has occurred.\nPlease try again</string>
+
     <string name="image_filter_grayscale">Grayscale</string>
     <string name="image_filter_blur">Blur</string>
 
