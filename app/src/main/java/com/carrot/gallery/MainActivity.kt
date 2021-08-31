@@ -8,35 +8,13 @@ import com.carrot.gallery.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * [ 앱 스펙 ]
- *
- * https://picsum.photos/
- *
- * 1.
- * api : https://picsum.photos/v2/list?page=2&limit=100
- * 이미지 가져오면 아래와 같은데
- *
- * {
- * "id":"117",
- * "author":"Daniel Ebersole",
- * "width":1544,
- * "height":1024,
- * "url":"https://unsplash.com/photos/Q14J2k8VE3U",
- * "download_url":"https://picsum.photos/id/117/1544/1024"
- * }
- *
- * 폰 해상도 가져와서 적절히 1/n 한 값으로 이미지 컨버팅해서 보여주기
- *
- * 2.
- * api : https://picsum.photos/id/870/200/300
- * 상세화면에서는 역시 폰 해상도 가져와서 적절히 보여주고,
- * 화면 효과 누르면 적절히 필터 먹여서 보여주는 정도
+ * TODO
+ * 에러처리 변경 하기
+ * 0. 인터넷 끊김 에러 캐치
+ * 1. 인터넷 연결 브로드캐스트 리시버 받아서 재연결 하는 부분 개발
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
-    companion object {
-    }
 
     private lateinit var binding: ActivityMainBinding
 
@@ -54,8 +32,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() {
-        // do observing if needed
-        //
         binding.viewModel = viewModel
     }
 

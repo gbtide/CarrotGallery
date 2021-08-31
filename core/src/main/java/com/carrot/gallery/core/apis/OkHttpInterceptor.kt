@@ -1,9 +1,11 @@
 package com.carrot.gallery.core.apis
 
+import com.carrot.gallery.core.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
+import timber.log.Timber
 import java.nio.charset.StandardCharsets
 
 /**
@@ -28,6 +30,10 @@ class OkHttpInterceptor : Interceptor {
         log(builder, request)
         val response = chain.proceed(request)
         log(builder, response)
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(builder.toString())
+        }
         return response
     }
 
@@ -36,9 +42,9 @@ class OkHttpInterceptor : Interceptor {
         builder.append("\n")
         builder.append("\n [ Request ]")
         builder.append("\n")
-        builder.append("(1) Request from : ${request.url}")
-        builder.append("(2) Request Method : ${request.method}")
-        builder.append("\n (3) Request Header")
+        builder.append("\n(1) Request from : ${request.url}")
+        builder.append("\n(2) Request Method : ${request.method}")
+        builder.append("\n(3) Request Header")
         for (key in request.headers.names()) {
             for (headerKey in REQUEST_HEADER_LIST_TO_BE_SHOWN) {
                 if (headerKey == key) {
@@ -67,16 +73,16 @@ class OkHttpInterceptor : Interceptor {
         builder.append("\n")
         builder.append("\n [ Response ]")
         builder.append("\n")
-        builder.append("\n (1) Response from : ")
+        builder.append("\n(1) Response from : ")
         builder.append(response.request.url)
-        builder.append("\n (2) Response Time : ")
+        builder.append("\n(2) Response Time : ")
         builder.append(responseTime - requestTime)
         builder.append("ms")
-        builder.append("\n (3) Response Code : ")
+        builder.append("\n(3) Response Code : ")
         builder.append(response.code)
-        builder.append("\n (4) Response Message : ")
+        builder.append("\n(4) Response Message : ")
         builder.append(response.message)
-        builder.append("\n (5) Response Headers : ")
+        builder.append("\n(5) Response Headers : ")
         var i = 0
         val len = responseHeaders.size
         while (i < len) {

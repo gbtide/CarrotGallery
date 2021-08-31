@@ -2,8 +2,6 @@
 <resources>
 
     <declare-styleable name="Theme">
-        <attr name="galleryTopSpecLine" format="dimension" />
-        <attr name="colorControlLight" format="color" />
     </declare-styleable>
 
 </resources>

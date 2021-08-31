@@ -2,10 +2,12 @@ package com.carrot.gallery.core.domain
 
 import com.carrot.gallery.core.data.ImageRepository
 import com.carrot.gallery.core.di.IoDispatcher
-import com.carrot.gallery.core.domain.base.UseCase
+import com.carrot.gallery.core.domain.base.FlowUseCase
 import com.carrot.gallery.core.result.Result
-import com.carrot.gallery.model.gallery.Image
+import com.carrot.gallery.model.domain.Image
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 /**
@@ -14,20 +16,17 @@ import javax.inject.Inject
 class GetImageUseCase @Inject constructor(
     private val imageRepository: ImageRepository,
     @IoDispatcher dispatcher: CoroutineDispatcher
-) : UseCase<Int, Image>(dispatcher) {
-    override suspend fun execute(id: Int): Image {
-        return imageRepository.getImage(id)
-    }
+) : FlowUseCase<Long, Image>(dispatcher) {
 
-    //    override fun execute(id: Int): Flow<Result<Image>> {
-//        return flow {
-//            try {
-//                emit(Result.Loading)
-//                val image = imageRepository.getImage(id)
-//                emit(Result.Success(image))
-//            } catch (e: Exception) {
-//                emit(Result.Error(e))
-//            }
-//        }
-//    }
+    override fun execute(id: Long): Flow<Result<Image>> = flow {
+        try {
+            emit(Result.Loading)
+
+            val result = imageRepository.getImage(id)
+            emit(Result.Success(result))
+
+        } catch (e: Exception) {
+            emit(Result.Error(e))
+        }
+    }
 }

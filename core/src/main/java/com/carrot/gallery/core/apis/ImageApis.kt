@@ -1,10 +1,10 @@
 package com.carrot.gallery.core.apis
 
-import com.carrot.gallery.model.gallery.Image
-import retrofit2.Call
+import com.carrot.gallery.model.response.ImageResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import javax.annotation.Nullable
 
 /**
  * Created by kyunghoon on 2021-08-27
@@ -12,9 +12,9 @@ import retrofit2.http.Query
 interface ImageApis {
 
     @GET("/v2/list")
-    suspend fun getImages(@Query("page") page: Int, @Query("limit") limit: Int): List<Image>
+    suspend fun getImages(@Query("page") page: Int, @Query("limit") limit: Int): List<ImageResponse>
 
     @GET("/id/{id}/info")
-    suspend fun getImage(@Path("id") id: Int): Image
+    suspend fun getImage(@Path("id") id: Long): ImageResponse
 
 }
