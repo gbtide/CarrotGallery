@@ -20,6 +20,7 @@ import com.carrot.gallery.databinding.FragmentGalleryBinding
 import com.carrot.gallery.ui.viewer.ImageViewerFragment
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_image_viewer.view.*
 import okhttp3.internal.toImmutableList
 import javax.inject.Inject
 
@@ -77,7 +78,16 @@ class GalleryFragment : Fragment() {
         }
 
         viewModel.images.observe(viewLifecycleOwner, { images ->
+            binding.refreshLayout.isRefreshing = false
             addToGallery(binding.galleryRecyclerview, images)
+        })
+
+        viewModel.errorViewShown.observe(viewLifecycleOwner, {
+            binding.refreshLayout.isRefreshing = false
+        })
+
+        viewModel.isEmpty.observe(viewLifecycleOwner, {
+            binding.refreshLayout.isRefreshing = false
         })
 
         binding.viewModel = viewModel
@@ -122,14 +132,6 @@ class GalleryFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         layoutManagerState = binding.galleryRecyclerview.layoutManager?.onSaveInstanceState()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
 }

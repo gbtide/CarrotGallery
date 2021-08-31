@@ -43,7 +43,6 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:onRefreshListener="@{() -> viewModel.onSwipeRefresh()}"
-            app:refreshing="@{viewModel.isLoading}"
             app:swipeRefreshColors="@{@intArray/swipe_refresh}">
 
             <FrameLayout
@@ -60,40 +59,39 @@
                     app:layout_anchor="@+id/refresh_layout"
                     app:layout_anchorGravity="center" />
 
-                <TextView
-                    android:id="@+id/empty_view"
-                    style="@style/Widget.CarrotGallery.EmptyResults"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginHorizontal="@dimen/margin_large"
-                    android:text="@string/picker_image_empty"
-                    app:goneUnless="@{viewModel.isEmpty}"
-                    tools:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/error_view"
-                    style="@style/Widget.CarrotGallery.ErrorResults"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/error_and_retry_message"
-                    android:textSize="@dimen/text_normal"
-                    android:visibility="@{viewModel.errorViewShown? View.VISIBLE : View.GONE}"
-                    app:layout_anchor="@+id/refresh_layout"
-                    app:layout_anchorGravity="center"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:visibility="visible" />
-
             </FrameLayout>
 
         </com.carrot.gallery.widget.CustomSwipeRefreshLayout>
 
+        <TextView
+            android:id="@+id/empty_view"
+            style="@style/Widget.CarrotGallery.EmptyResults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/margin_large"
+            android:text="@string/picker_image_empty"
+            app:goneUnless="@{viewModel.isEmpty}"
+            tools:visibility="gone" />
 
+        <TextView
+            android:id="@+id/error_view"
+            style="@style/Widget.CarrotGallery.ErrorResults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/error_and_retry_message"
+            android:visibility="@{viewModel.errorViewShown? View.VISIBLE : View.GONE}"
+            tools:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="@dimen/margin_normal"
+            app:goneUnless="@{viewModel.isLoading}"
+            />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -13,6 +13,7 @@
         <item name="android:paddingTop">@dimen/margin_small</item>
         <item name="android:paddingBottom">@dimen/margin_normal</item>
         <item name="android:background">@color/bg06</item>
+        <item name="android:textSize">@dimen/text_normal</item>
         <item name="android:textColor">@color/tc01</item>
         <item name="android:drawablePadding">@dimen/margin_small</item>
         <item name="android:drawableTop">@drawable/ic_nav_list</item>
@@ -25,6 +26,7 @@
         <item name="android:paddingTop">@dimen/margin_small</item>
         <item name="android:paddingBottom">@dimen/margin_normal</item>
         <item name="android:background">@color/bg06</item>
+        <item name="android:textSize">@dimen/text_normal</item>
         <item name="android:textColor">@color/tc01</item>
         <item name="android:drawablePadding">@dimen/margin_small</item>
         <item name="android:drawableTop">@drawable/ic_nav_info</item>
