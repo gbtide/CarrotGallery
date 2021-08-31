@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="Base.AppTheme" />
-
     <style name="Base.AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-
-        <!-- Window decor -->
-
-        <!-- Widget styles -->
-
-        <!-- Text appearances -->
-
-        <!-- Dialogs -->
-
-        <!-- Custom theme attrs -->
-        <item name="galleryTopSpecLine">@dimen/gallery_top_spec_line</item>
-        <item name="colorControlLight">@color/color_control_light</item>
     </style>
+
+    <style name="AppTheme" parent="Base.AppTheme" />
 
 </resources>

@@ -4,7 +4,7 @@ import com.carrot.gallery.core.data.ImageRepository
 import com.carrot.gallery.core.di.IoDispatcher
 import com.carrot.gallery.core.domain.base.FlowUseCase
 import com.carrot.gallery.core.result.Result
-import com.carrot.gallery.model.gallery.Image
+import com.carrot.gallery.model.domain.Image
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,19 +16,17 @@ import javax.inject.Inject
 class GetImageUseCase @Inject constructor(
     private val imageRepository: ImageRepository,
     @IoDispatcher dispatcher: CoroutineDispatcher
-) : FlowUseCase<Int, Image>(dispatcher) {
+) : FlowUseCase<Long, Image>(dispatcher) {
 
-    override fun execute(id: Int): Flow<Result<Image>> = flow {
+    override fun execute(id: Long): Flow<Result<Image>> = flow {
         try {
             emit(Result.Loading)
-            emit(Result.Success(imageRepository.getImage(id)))
+
+            val result = imageRepository.getImage(id)
+            emit(Result.Success(result))
+
         } catch (e: Exception) {
             emit(Result.Error(e))
         }
     }
-
-    //    override suspend fun execute(id: Int): Image {
-//        return imageRepository.getImage(id)
-//    }
-
 }

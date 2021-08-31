@@ -57,7 +57,7 @@ dependencies {
     // hilt
     implementation "com.google.dagger:hilt-android:${project.hilt_android}"
     kapt "com.google.dagger:hilt-android-compiler:${project.hilt_android_compiler}"
-    kapt "androidx.hilt:hilt-compiler:${project.hilt_compiler}"
+//    kapt "androidx.hilt:hilt-compiler:${project.hilt_compiler}"
 
     // jakewharton Timber
     implementation "com.jakewharton.timber:timber:${project.timber}"

@@ -4,13 +4,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.carrot.gallery.widget.CustomSwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.davemorrissey.labs.subscaleview.ImageSource
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import java.util.*
+import com.carrot.gallery.widget.CustomSwipeRefreshLayout
 
 /**
  * Created by kyunghoon on 2021-08
@@ -22,13 +19,6 @@ fun goneUnless(view: View, visible: Boolean) {
 
 @BindingAdapter("swipeRefreshColors")
 fun setSwipeRefreshColors(swipeRefreshLayout: CustomSwipeRefreshLayout, colorResIds: IntArray) {
-    // memo.
-    // https://kotlinlang.org/docs/reference/functions.html#variable-number-of-arguments-varargs
-    //
-    // if we already have an array and want to pass its contents to the function, we use the spread operator (prefix the array with *):
-    //
-    // val a = arrayOf(1, 2, 3)
-    // val list = asList(-1, 0, *a, 4)
     swipeRefreshLayout.setColorSchemeColors(*colorResIds)
 }
 
@@ -38,7 +28,6 @@ fun setGlideImage(imageView: ImageView, glideImage: String?, glideCenterInside: 
     if (glideCenterInside) {
         builder.centerInside()
     } else {
-        // default
         builder.centerCrop()
     }
     builder.diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -46,12 +35,7 @@ fun setGlideImage(imageView: ImageView, glideImage: String?, glideCenterInside: 
         .into(imageView)
 }
 
-@BindingAdapter("image")
-fun setImage(imageView: SubsamplingScaleImageView, localPath: String) {
-    imageView.setImage(ImageSource.uri(localPath))
-}
-
-@BindingAdapter(value = ["formatSeconds", "pattern"])
-fun secondsToDateText(textView: TextView, formatSeconds: Long, pattern: String) {
+@BindingAdapter(value = ["formatSeconds"])
+fun secondsToDateText(textView: TextView, formatSeconds: Long) {
     textView.text = TimeUtils.parseToHHmmss(formatSeconds)
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="tc01">@color/white</color>
+    <color name="bt06">@color/white_opacity_60</color>
+    <color name="bg06">@color/black_opacity_40</color>
+
+</resources>
