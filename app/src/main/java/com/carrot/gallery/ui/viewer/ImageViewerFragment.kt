@@ -1,7 +1,9 @@
 package com.carrot.gallery.ui.viewer
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -123,6 +125,11 @@ class ImageViewerFragment : Fragment() {
             when (it) {
                 is ImageViewerSingleEventType.ClickCloseButton -> {
                     findNavController().popBackStack()
+                }
+                is ImageViewerSingleEventType.ClickMoreButton -> {
+                    // TODO custom tab 변경
+                    // https://developer.chrome.com/docs/android/custom-tabs/integration-guide/
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
                 }
             }
         }

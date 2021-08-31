@@ -42,7 +42,7 @@ class ImageViewerViewModel @Inject constructor(
             .filter { it !is Result.Error }
             .map {
                 val imageViewerImage = ImageViewerImageMapper.fromImage(it.data!!)
-                baseImageUrl.value = imageUrlMaker.addAdjustSizeParam(imageViewerImage.url, imageViewerImage.width, imageViewerImage.height)
+                baseImageUrl.value = imageUrlMaker.addAdjustSizeParam(imageViewerImage.downloadUrl, imageViewerImage.width, imageViewerImage.height)
                 return@map imageViewerImage
 
             }.asLiveData()
@@ -89,8 +89,12 @@ class ImageViewerViewModel @Inject constructor(
             })
     }
 
-    fun onCloseButtonClick() {
+    fun onClickCloseButton() {
         notifySingleEvent(ImageViewerSingleEventType.ClickCloseButton)
+    }
+
+    fun onClickMoreButton(url: String) {
+        notifySingleEvent(ImageViewerSingleEventType.ClickMoreButton(url))
     }
 
     fun onSingleTabImageEvent() {
@@ -126,4 +130,5 @@ class ImageViewerViewModel @Inject constructor(
 
 sealed class ImageViewerSingleEventType : SingleEventType {
     object ClickCloseButton : ImageViewerSingleEventType()
+    data class ClickMoreButton(val url: String) : ImageViewerSingleEventType()
 }

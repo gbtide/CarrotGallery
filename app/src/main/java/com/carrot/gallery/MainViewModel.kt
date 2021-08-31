@@ -9,8 +9,4 @@ import androidx.lifecycle.ViewModel
 class MainViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
-    companion object {
-        private const val TAG = "MainViewModel"
-    }
-
 }

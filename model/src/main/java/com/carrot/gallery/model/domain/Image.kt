@@ -11,7 +11,9 @@ data class Image(
     val url: String,
 
     /**
-     * 원본 이미지 url. size 내용을 담고 있지 않습니다.
+     * 예시 : "https://picsum.photos/id/0/"
+     *
+     * api response 와는 달리 원본 이미지 url. size 내용을 담고 있지 않습니다.
      */
     val downloadUrl: String
 

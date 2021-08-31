@@ -13,6 +13,7 @@ class ImageViewerImageMapper {
             return ImageViewerImage(
                 image.id,
                 image.author,
+                image.url,
                 image.downloadUrl,
                 image.width,
                 image.height

@@ -71,7 +71,7 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="@dimen/margin_large"
             android:text="@string/picker_image_empty"
-            app:goneUnless="@{viewModel.isEmpty}"
+            app:goneUnless="@{viewModel.emptyViewShown}"
             tools:visibility="gone" />
 
         <TextView

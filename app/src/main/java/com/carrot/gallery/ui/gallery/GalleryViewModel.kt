@@ -46,7 +46,7 @@ class GalleryViewModel @Inject constructor(
     val isLoading = dataFlowStatus.map { it is Result.Loading }
 
     val errorViewShown = dataFlowStatus.map { it is Result.Error }
-    val isEmpty = MutableLiveData<Boolean>()
+    val emptyViewShown = MutableLiveData<Boolean>()
 
     init {
         images = currentPage.switchMap { page ->
@@ -59,7 +59,7 @@ class GalleryViewModel @Inject constructor(
                 .filter { it !is Result.Error }
                 .filter {
                     val emptyFromFirstPage = it is Result.Success && (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(it.data))
-                    isEmpty.value = emptyFromFirstPage
+                    emptyViewShown.value = emptyFromFirstPage
                     return@filter !emptyFromFirstPage
                 }
                 .map {

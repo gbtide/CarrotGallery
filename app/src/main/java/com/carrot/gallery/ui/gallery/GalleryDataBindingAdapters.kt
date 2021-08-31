@@ -31,12 +31,7 @@ fun loadGalleryImageAtGrid(
         galleryImageUrl,
         galleryColumnCount
     )
-
-    galleryShimmerView.setShimmer(Shimmer.ColorHighlightBuilder()
-        .setBaseColor(Color.GRAY)
-        .setHighlightColor(Color.WHITE)
-        .build())
-
+    galleryShimmerView.setShimmer(GalleryCustomShimmer.customShimmer)
     galleryShimmerView.startShimmer()
 
     Glide.with(imageView.context)
@@ -54,7 +49,7 @@ fun loadGalleryImageAtGrid(
                 return false
             }
         })
-        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
         .transition(DrawableTransitionOptions.withCrossFade(100))
         .into(imageView)
 }

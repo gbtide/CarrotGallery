@@ -7,5 +7,6 @@
 
     <string name="image_filter_grayscale">Grayscale</string>
     <string name="image_filter_blur">Blur</string>
+    <string name="image_more_button">More</string>
 
 </resources>
