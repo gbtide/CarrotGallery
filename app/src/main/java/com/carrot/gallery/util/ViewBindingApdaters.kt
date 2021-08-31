@@ -19,13 +19,6 @@ fun goneUnless(view: View, visible: Boolean) {
 
 @BindingAdapter("swipeRefreshColors")
 fun setSwipeRefreshColors(swipeRefreshLayout: CustomSwipeRefreshLayout, colorResIds: IntArray) {
-    // memo.
-    // https://kotlinlang.org/docs/reference/functions.html#variable-number-of-arguments-varargs
-    //
-    // if we already have an array and want to pass its contents to the function, we use the spread operator (prefix the array with *):
-    //
-    // val a = arrayOf(1, 2, 3)
-    // val list = asList(-1, 0, *a, 4)
     swipeRefreshLayout.setColorSchemeColors(*colorResIds)
 }
 
@@ -35,19 +28,12 @@ fun setGlideImage(imageView: ImageView, glideImage: String?, glideCenterInside: 
     if (glideCenterInside) {
         builder.centerInside()
     } else {
-        // default
         builder.centerCrop()
     }
     builder.diskCacheStrategy(DiskCacheStrategy.NONE)
         .transition(DrawableTransitionOptions.withCrossFade(300))
         .into(imageView)
 }
-
-//@BindingAdapter("image")
-//fun setImage(imageView: SubsamplingScaleImageView, url: String) {
-////    imageView.setImage(ImageSource.uri(localPath))
-//    imageView.setImage(ImageSource.uri(url))
-//}
 
 @BindingAdapter(value = ["formatSeconds"])
 fun secondsToDateText(textView: TextView, formatSeconds: Long) {

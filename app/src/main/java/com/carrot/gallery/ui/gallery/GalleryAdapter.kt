@@ -1,4 +1,4 @@
-package com.carrot.gallery.gallery
+package com.carrot.gallery.ui.gallery
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil

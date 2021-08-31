@@ -1,4 +1,4 @@
-package com.carrot.gallery.viewer
+package com.carrot.gallery.ui.viewer
 
 import androidx.lifecycle.*
 import com.carrot.gallery.core.domain.GetImageUseCase

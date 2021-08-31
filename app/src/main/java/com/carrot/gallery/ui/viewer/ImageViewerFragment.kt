@@ -1,4 +1,4 @@
-package com.carrot.gallery.viewer
+package com.carrot.gallery.ui.viewer
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable

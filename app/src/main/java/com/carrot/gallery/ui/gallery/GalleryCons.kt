@@ -1,4 +1,4 @@
-package com.carrot.gallery.gallery
+package com.carrot.gallery.ui.gallery
 
 /**
  * Created by kyunghoon on 2021-08-28

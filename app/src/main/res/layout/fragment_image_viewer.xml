@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".gallery.GalleryFragment">
+    tools:context=".ui.gallery.GalleryFragment">
 
     <data>
 
@@ -10,11 +10,11 @@
 
         <variable
             name="image"
-            type="com.carrot.gallery.viewer.ImageViewerImage" />
+            type="com.carrot.gallery.ui.viewer.ImageViewerImage" />
 
         <variable
             name="viewModel"
-            type="com.carrot.gallery.viewer.ImageViewerViewModel" />
+            type="com.carrot.gallery.ui.viewer.ImageViewerViewModel" />
 
     </data>
 

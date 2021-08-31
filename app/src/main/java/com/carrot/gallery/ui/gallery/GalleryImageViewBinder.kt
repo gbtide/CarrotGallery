@@ -1,4 +1,4 @@
-package com.carrot.gallery.gallery
+package com.carrot.gallery.ui.gallery
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

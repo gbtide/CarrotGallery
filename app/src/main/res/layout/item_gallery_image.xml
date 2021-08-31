@@ -8,7 +8,7 @@
 
         <variable
             name="image"
-            type="com.carrot.gallery.gallery.GalleryImage" />
+            type="com.carrot.gallery.ui.gallery.GalleryImage" />
 
         <variable
             name="galleryColumnCount"
@@ -20,53 +20,58 @@
 
         <variable
             name="eventListener"
-            type="com.carrot.gallery.gallery.GalleryItemClickListener" />
+            type="com.carrot.gallery.ui.gallery.GalleryItemClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
         android:onClick="@{view -> eventListener.onClickImage(image)}"
         >
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_start"
-            android:layout_width="0dp"
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_view_container"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="0dp" />
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_end"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="0dp" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="28dp"
+                android:src="@drawable/ic_waitlist_available"
+                />
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
         <ImageView
             android:id="@+id/preview_image"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             app:galleryColumnCount="@{galleryColumnCount}"
             app:galleryImageUrl="@{image.imageUrl}"
             app:galleryThumbnailUrlMaker="@{galleryThumbnailUrlMaker}"
+            app:galleryShimmerView="@{shimmerViewContainer}"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@id/guideline_end"
-            app:layout_constraintStart_toEndOf="@id/guideline_start"
-            app:layout_constraintTop_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <View
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/thumbnail_boarder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@id/guideline_end"
-            app:layout_constraintStart_toEndOf="@id/guideline_start"
-            app:layout_constraintTop_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,16 +1,14 @@
-package com.carrot.gallery.gallery
+package com.carrot.gallery.ui.gallery
 
 import androidx.lifecycle.*
 import com.carrot.gallery.core.di.IoDispatcher
 import com.carrot.gallery.core.domain.GetImagesParameter
 import com.carrot.gallery.core.domain.GetImagesUseCase
 import com.carrot.gallery.core.event.SingleEventType
-import com.carrot.gallery.core.event.SingleLiveEvent
 import com.carrot.gallery.core.event.ViewModelSingleEventsDelegate
 import com.carrot.gallery.core.result.Result
 import com.carrot.gallery.core.result.successOr
 import com.carrot.gallery.core.util.CollectionUtils
-import com.carrot.gallery.core.util.combine
 import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
