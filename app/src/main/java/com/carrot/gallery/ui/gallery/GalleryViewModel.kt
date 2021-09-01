@@ -10,6 +10,8 @@ import com.carrot.gallery.core.result.Result
 import com.carrot.gallery.core.result.successOr
 import com.carrot.gallery.core.util.CollectionUtils
 import com.carrot.gallery.model.domain.Image
+import com.carrot.gallery.data.GalleryImageItemViewData
+import com.carrot.gallery.data.GalleryImageItemViewDataMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filter
@@ -32,24 +34,28 @@ class GalleryViewModel @Inject constructor(
         private const val ITEM_COUNT_PER_PAGE = 30
     }
 
-    val images: LiveData<List<Any>>
+    val images = MutableLiveData<MutableList<Image>>()
+
+    val imageViewDataList: LiveData<List<GalleryImageItemViewData>>
 
     private val currentPage = MutableLiveData<Int>()
 
-    private val lastAddedItems = MutableLiveData<List<Any>>()
+    private val lastAddedImages = MutableLiveData<List<Image>>()
 
-    private var isLastPage: LiveData<Boolean> = lastAddedItems.map {
+    private var isLastPage: LiveData<Boolean> = lastAddedImages.map {
         CollectionUtils.isEmpty(it) || it.size < ITEM_COUNT_PER_PAGE
     }
 
-    private val dataFlowStatus = MutableLiveData<Result<*>>()
+    private val dataFlowStatus = MutableLiveData<Result<Any>>()
     val isLoading = dataFlowStatus.map { it is Result.Loading }
 
     val errorViewShown = dataFlowStatus.map { it is Result.Error }
     val emptyViewShown = MutableLiveData<Boolean>()
 
     init {
-        images = currentPage.switchMap { page ->
+        images.value = mutableListOf()
+
+        imageViewDataList = currentPage.switchMap { page ->
             getImagesUseCase(GetImagesParameter(page, ITEM_COUNT_PER_PAGE))
                 .map {
                     dataFlowStatus.value = it
@@ -58,13 +64,15 @@ class GalleryViewModel @Inject constructor(
                 .filter { it !is Result.Loading }
                 .filter { it !is Result.Error }
                 .filter {
-                    val emptyFromFirstPage = it is Result.Success && (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(it.data))
-                    emptyViewShown.value = emptyFromFirstPage
-                    return@filter !emptyFromFirstPage
+                    val emptyInFirstPage = it is Result.Success && (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(it.data))
+                    emptyViewShown.value = emptyInFirstPage
+                    return@filter !emptyInFirstPage
                 }
                 .map {
+                    // Result.Success
                     val result = it.successOr(emptyList())
-                    lastAddedItems.value = result
+                    images.value?.addAll(result)
+                    lastAddedImages.value = result
                     return@map makeGalleryImagesFrom(result, page)
 
                 }.asLiveData()
@@ -81,16 +89,16 @@ class GalleryViewModel @Inject constructor(
         currentPage.value = currentPage.value!! + 1
     }
 
-    private suspend fun makeGalleryImagesFrom(data: List<Image>, page: Int): List<Any> {
-        val addedImages: List<GalleryImage>
+    private suspend fun makeGalleryImagesFrom(data: List<Image>, page: Int): List<GalleryImageItemViewData> {
+        val addedImages: List<GalleryImageItemViewData>
         withContext(idDispatcher) {
-            addedImages = GalleryImageMapper.fromImages(data)
+            addedImages = GalleryImageItemViewDataMapper.toSimpleImages(data)
         }
 
         return if (page == FIRST_IMAGE_PAGE_NO) {
             addedImages
         } else {
-            val oldList = images.value!!
+            val oldList = imageViewDataList.value!!
             oldList + addedImages   // memo. list reference 새로 생성
         }
     }
@@ -109,15 +117,15 @@ class GalleryViewModel @Inject constructor(
         requestFirstPage()
     }
 
-    override fun onClickImage(image: GalleryImage, position: Int) {
-        notifySingleEvent(GallerySingleEventType.GoToImageViewer(image, position))
+    override fun onClickSimpleImage(image: GalleryImageItemViewData.SimpleImage, position: Int) {
+        notifySingleEvent(GallerySingleEventType.GoToSimpleImageViewer(image, position))
     }
 }
 
 interface GalleryItemClickListener {
-    fun onClickImage(image: GalleryImage, position: Int)
+    fun onClickSimpleImage(image: GalleryImageItemViewData.SimpleImage, position: Int)
 }
 
 sealed class GallerySingleEventType : SingleEventType {
-    data class GoToImageViewer(val image: GalleryImage, val position: Int) : GallerySingleEventType()
+    data class GoToSimpleImageViewer(val image: GalleryImageItemViewData.SimpleImage, val position: Int) : GallerySingleEventType()
 }

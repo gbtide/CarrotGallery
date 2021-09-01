@@ -5,7 +5,6 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -14,10 +13,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carrot.gallery.SharedViewModel
-import com.carrot.gallery.R
 import com.carrot.gallery.core.image.ImageUrlMaker
+import com.carrot.gallery.data.GalleryImageItemViewData
 import com.carrot.gallery.databinding.FragmentGalleryBinding
-import com.carrot.gallery.ui.viewer.ImageViewerFragment
+import com.carrot.gallery.ui.BaseAdapter
+import com.carrot.gallery.ui.ItemBinder
+import com.carrot.gallery.ui.ItemClass
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
@@ -29,7 +30,7 @@ class GalleryFragment : Fragment() {
     private lateinit var binding: FragmentGalleryBinding
     private val viewModel: GalleryViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
-    private var galleryAdapter: GalleryAdapter? = null
+    private var galleryAdapter: BaseAdapter? = null
 
     @Inject
     lateinit var imageUrlMaker: ImageUrlMaker
@@ -69,18 +70,20 @@ class GalleryFragment : Fragment() {
     private fun initViewModel() {
         viewModel.observeSingleEvent(viewLifecycleOwner) {
             when (it) {
-                is GallerySingleEventType.GoToImageViewer -> {
-                    val direction = GalleryFragmentDirections.toImageViewer(it.image.id, it.position)
+                is GallerySingleEventType.GoToSimpleImageViewer -> {
+                    val direction = GalleryFragmentDirections.toImageViewer(it.position)
                     findNavController().navigate(direction)
                 }
             }
         }
 
         viewModel.images.observe(viewLifecycleOwner, { images ->
+            sharedViewModel.onUpdateListAtGallery(images)
+        })
+
+        viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->
             addToGallery(binding.galleryRecyclerview, images)
             binding.refreshLayout.isRefreshing = false
-
-            sharedViewModel.onUpdateListAtGallery(images)
         })
 
         viewModel.errorViewShown.observe(viewLifecycleOwner, {
@@ -94,13 +97,14 @@ class GalleryFragment : Fragment() {
         binding.viewModel = viewModel
     }
 
-    private fun addToGallery(recyclerView: RecyclerView, list: List<Any>?) {
+    @Suppress("UNCHECKED_CAST")
+    private fun addToGallery(recyclerView: RecyclerView, list: List<GalleryImageItemViewData>?) {
         if (galleryAdapter == null) {
-            val imageViewBinder = GalleryImageViewBinder(viewModel, imageUrlMaker)
-            val viewBinders: HashMap<Class<out Any>, GalleryItemViewBinder<Any, RecyclerView.ViewHolder>> = HashMap()
-            @Suppress("UNCHECKED_CAST")
-            viewBinders[imageViewBinder.modelClass] = imageViewBinder as GalleryItemBinder
-            galleryAdapter = GalleryAdapter(viewBinders)
+            val viewBinders = HashMap<ItemClass, ItemBinder>()
+
+            val imageViewBinder = GallerySimpleImageItemBinder(viewModel, imageUrlMaker)
+            viewBinders[imageViewBinder.modelClass] = imageViewBinder as ItemBinder
+            galleryAdapter = BaseAdapter(viewBinders)
         }
         if (recyclerView.adapter == null) {
             recyclerView.apply {
@@ -117,7 +121,7 @@ class GalleryFragment : Fragment() {
             }
 
         }
-        (recyclerView.adapter as GalleryAdapter).submitList(list?.toImmutableList() ?: emptyList())
+        (recyclerView.adapter as BaseAdapter).submitList(list?.toImmutableList() ?: emptyList())
 
         // 체크!
         // After submitting the list to the adapter, the recycler view starts measuring and drawing

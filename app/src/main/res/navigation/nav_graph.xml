@@ -24,12 +24,6 @@
         android:label="ImageViewerFragment" >
 
         <argument
-            android:name="id"
-            app:argType="long"
-            android:defaultValue="0L"
-            />
-
-        <argument
             android:name="position"
             app:argType="integer"
             android:defaultValue="0"

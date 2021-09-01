@@ -12,7 +12,7 @@
 
         <variable
             name="image"
-            type="com.carrot.gallery.ui.gallery.GalleryImage" />
+            type="com.carrot.gallery.data.GalleryImageItemViewData.SimpleImage" />
 
         <variable
             name="galleryColumnCount"
@@ -30,7 +30,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{view -> eventListener.onClickImage(image, position)}"
+        android:onClick="@{view -> eventListener.onClickSimpleImage(image, position)}"
         >
 
         <com.facebook.shimmer.ShimmerFrameLayout
@@ -38,8 +38,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             >
 
@@ -57,12 +57,12 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:galleryColumnCount="@{galleryColumnCount}"
-            app:galleryImageUrl="@{image.imageUrl}"
+            app:galleryImageUrl="@{image.urlWithoutSize}"
             app:galleryThumbnailUrlMaker="@{galleryThumbnailUrlMaker}"
             app:galleryShimmerView="@{shimmerViewContainer}"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
 
@@ -70,11 +70,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/thumbnail_boarder"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

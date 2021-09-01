@@ -1,17 +1,15 @@
 package com.carrot.gallery.ui.viewer
 
 import androidx.lifecycle.*
-import com.carrot.gallery.core.domain.GetImageUseCase
+import com.carrot.gallery.core.domain.GetImagesUseCase
 import com.carrot.gallery.core.event.SingleEventType
 import com.carrot.gallery.core.event.ViewModelSingleEventsDelegate
-import com.carrot.gallery.core.image.ImageUrlMaker
-import com.carrot.gallery.core.result.*
-import com.carrot.gallery.core.util.combine
+import com.carrot.gallery.core.result.Result
+import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.subjects.PublishSubject
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -21,43 +19,31 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ImageViewerViewModel @Inject constructor(
-    private val getImageUseCase: GetImageUseCase,
-    private val imageUrlMaker: ImageUrlMaker,
+    private val getImagesUseCase: GetImagesUseCase,
     private val singleEventDelegate: ViewModelSingleEventsDelegate,
-) : ViewModel(), ViewModelSingleEventsDelegate by singleEventDelegate {
+) : ViewModel(), ImageViewerViewEventListener, ViewModelSingleEventsDelegate by singleEventDelegate {
     companion object {
         private const val TAG = "ImageViewerViewModel"
     }
 
-    private val id = MutableLiveData<Long>()
-    private val dataFlowStatus = MutableLiveData<Result<*>>()
+    private var position: Int = 0
 
-    val image = id.switchMap { _id ->
-        getImageUseCase(_id)
-            .map {
-                dataFlowStatus.value = it
-                it
-            }
-            .filter { it !is Result.Loading }
-            .filter { it !is Result.Error }
-            .map {
-                val imageViewerImage = ImageViewerImageMapper.fromImage(it.data!!)
-                baseImageUrl.value = imageUrlMaker.addAdjustSizeParam(imageViewerImage.downloadUrl, imageViewerImage.width, imageViewerImage.height)
-                return@map imageViewerImage
+    private val _images = MutableLiveData<List<Image>>()
+    val images: LiveData<List<Image>>
+        get() = _images
 
-            }.asLiveData()
-    }
+    private var oldImages: List<Image>? = null
 
-    private val baseImageUrl = MutableLiveData<String>()
-    private val blurValue = MutableLiveData<Int>()
-    private val useGrayscale = MutableLiveData<Boolean>()
+    private val imageDiff: LiveData<List<Image>>
 
-    val imageUrl = baseImageUrl.combine(blurValue, useGrayscale) { _baseUrl, _blurVal, _grayscaleVal ->
-        imageUrlMaker.addFilterEffectParam(_baseUrl, _blurVal, _grayscaleVal)
-    }
+    val imageViewDataList: LiveData<List<ImageViewerViewData>>
 
+    private val _currentImage = MutableLiveData<ImageViewerViewData>()
+    val currentImage: LiveData<ImageViewerViewData>
+        get() = _currentImage
+
+    private val dataFlowStatus = MutableLiveData<Result<Any>>()
     val isLoading = dataFlowStatus.map { it is Result.Loading }
-
     val errorViewShown = dataFlowStatus.map { it is Result.Error }
 
     private val _functionBarToggler = MutableLiveData<Boolean>()
@@ -70,22 +56,45 @@ class ImageViewerViewModel @Inject constructor(
     private val disposable = CompositeDisposable()
 
     init {
-        blurValue.value = 0
-        useGrayscale.value = false
         _functionBarToggler.value = false
 
         observeBlurEffectValue()
+
+        imageDiff = images.map {
+            val oldSize = oldImages?.size ?: 0
+            val diff = if (it.size > oldSize) it.subList(oldSize, it.size) else emptyList()
+            oldImages = it
+            return@map diff
+        }
+
+        imageViewDataList = imageDiff.map { diff ->
+            return@map sumToImageViewDataList(diff)
+        }
+
+        // 임시 코
+        dataFlowStatus.value = Result.Success(Any())
     }
 
-    fun onViewCreated(id: Long) {
-        this.id.value = id
+    fun onViewCreated(position: Int) {
+        this.position = position
+    }
+
+    fun onInitImages(images: List<Image>) {
+        this._images.value = images
+    }
+
+    private fun sumToImageViewDataList(diff: List<Image>): List<ImageViewerViewData> {
+        val oldList: List<ImageViewerViewData> = imageViewDataList.value ?: emptyList()
+        return oldList + ImageViewerViewDataMapper.toImageViewerViewDataList(diff)
     }
 
     private fun observeBlurEffectValue() {
         disposable.add(seekbarEventPublisher
             .debounce(500, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe { blurValue ->
-                this.blurValue.postValue(blurValue)
+                _currentImage.value?.blur = blurValue
+                notifySingleEvent(ImageViewerSingleEventType.NotifyDataChange)
             })
     }
 
@@ -93,11 +102,11 @@ class ImageViewerViewModel @Inject constructor(
         notifySingleEvent(ImageViewerSingleEventType.ClickCloseButton)
     }
 
-    fun onClickMoreButton(url: String) {
-        notifySingleEvent(ImageViewerSingleEventType.ClickMoreButton(url))
+    fun onClickMoreButton(image: ImageViewerViewData) {
+        notifySingleEvent(ImageViewerSingleEventType.ClickMoreButton(image.externalLinkUrl))
     }
 
-    fun onSingleTabImageEvent() {
+    override fun onSingleTabImageEvent() {
         _functionBarToggler.value = !_functionBarToggler.value!!
     }
 
@@ -106,19 +115,13 @@ class ImageViewerViewModel @Inject constructor(
     }
 
     fun onChangeGrayscaleEffect(onEffect: Boolean) {
-        useGrayscale.value = onEffect
+        _currentImage.value?.grayscale = onEffect
+        notifySingleEvent(ImageViewerSingleEventType.NotifyDataChange)
     }
 
-    fun onStartLoadImageToView() {
-        dataFlowStatus.value = Result.Loading
-    }
-
-    fun onSuccessLoadImageToView() {
-        dataFlowStatus.value = Result.createEmptySuccess()
-    }
-
-    fun onFailureLoadImageToView(e: Throwable) {
-        dataFlowStatus.value = Result.Error(e)
+    fun onChangePosition(position: Int) {
+        this.position = position
+        _currentImage.value = this.imageViewDataList.value!![position]
     }
 
     override fun onCleared() {
@@ -128,7 +131,12 @@ class ImageViewerViewModel @Inject constructor(
 
 }
 
+interface ImageViewerViewEventListener {
+    fun onSingleTabImageEvent()
+}
+
 sealed class ImageViewerSingleEventType : SingleEventType {
     object ClickCloseButton : ImageViewerSingleEventType()
     data class ClickMoreButton(val url: String) : ImageViewerSingleEventType()
+    object NotifyDataChange : ImageViewerSingleEventType()
 }

@@ -1,8 +1,6 @@
 package com.carrot.gallery.ui.viewer
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,19 +11,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.Transition
+import androidx.viewpager2.widget.ViewPager2
 import com.carrot.gallery.SharedViewModel
 import com.carrot.gallery.core.domain.ImageCons
+import com.carrot.gallery.core.image.ImageUrlMaker
+import com.carrot.gallery.data.GalleryImageItemViewData
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
+import com.carrot.gallery.ui.BaseAdapter
+import com.carrot.gallery.ui.ItemBinder
+import com.carrot.gallery.ui.ItemClass
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
+import okhttp3.internal.toImmutableList
+import javax.inject.Inject
 
 /**
  * Created by kyunghoon on 2021-01
@@ -39,12 +36,16 @@ class ImageViewerFragment : Fragment() {
     private val viewModel: ImageViewerViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
+    private var imageViewerAdapter: BaseAdapter? = null
+    private var imageViewBinder: ImageViewerSimpleImageItemBinder? = null
+
+    @Inject
+    lateinit var imageUrlMaker: ImageUrlMaker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            imageId = ImageViewerFragmentArgs.fromBundle(it).id
             position = ImageViewerFragmentArgs.fromBundle(it).position
         }
     }
@@ -66,13 +67,18 @@ class ImageViewerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initViewModel()
-        viewModel.onViewCreated(imageId)
+        viewModel.onViewCreated(position)
     }
 
     private fun initView() {
-        binding.imageViewerView.setOnPhotoTapListener { _, _, _ -> viewModel.onSingleTabImageEvent() }
-
-        binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener { _, isChecked -> viewModel.onChangeGrayscaleEffect(isChecked) }
+        binding.imageViewerViewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                viewModel.onChangePosition(position)
+            }
+        })
+        binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onChangeGrayscaleEffect(isChecked)
+        }
 
         binding.bottomBarBlurSeekbar.max = ImageCons.BLUR_FILTER_MAX_VALUE
         binding.bottomBarBlurSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -91,42 +97,17 @@ class ImageViewerFragment : Fragment() {
 
     private fun initViewModel() {
         sharedViewModel.sharedList.observe(viewLifecycleOwner, { images ->
-            Timber.d("### aa " + images.count())
+            viewModel.onInitImages(images)
+            sharedViewModel.sharedList.removeObservers(viewLifecycleOwner)
         })
 
-        viewModel.image.observe(viewLifecycleOwner, { image ->
-            binding.image = image
-            binding.executePendingBindings()
+        viewModel.images.observe(viewLifecycleOwner, { images ->
+            sharedViewModel.onUpdateListAtImageViewer(images)
         })
 
-        viewModel.imageUrl.observe(viewLifecycleOwner) { url ->
-            viewModel.onStartLoadImageToView()
-
-            // memo. blink 이슈로 .into(binding.imageViewerView) 를 쓰지 않았습니다.
-            Glide.with(binding.imageViewerView.context)
-                .asBitmap()
-                .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .listener(object : RequestListener<Bitmap> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                        viewModel.onFailureLoadImageToView(e ?: GlideException("Unknown Glide Exception"))
-                        return true
-                    }
-
-                    override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        return false
-                    }
-                })
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
-                        viewModel.onSuccessLoadImageToView()
-                        binding.imageViewerView.setImageBitmap(bitmap)
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                    }
-                })
-        }
+        viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->
+            initViewPager(binding.imageViewerViewPager, images)
+        })
 
         viewModel.observeSingleEvent(viewLifecycleOwner) {
             when (it) {
@@ -138,11 +119,34 @@ class ImageViewerFragment : Fragment() {
                     // https://developer.chrome.com/docs/android/custom-tabs/integration-guide/
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
                 }
+                is ImageViewerSingleEventType.NotifyDataChange -> {
+                    binding.imageViewerViewPager.adapter?.notifyDataSetChanged()
+                }
             }
         }
 
         binding.viewModel = viewModel
     }
 
+    private fun initViewPager(viewPager: ViewPager2, list: List<ImageViewerViewData>?) {
+        addToViewPager(viewPager, list)
+        viewPager.setCurrentItem(position, false)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun addToViewPager(viewPager: ViewPager2, list: List<ImageViewerViewData>?) {
+        if (imageViewerAdapter == null) {
+            val viewBinders = HashMap<ItemClass, ItemBinder>()
+            imageViewBinder = ImageViewerSimpleImageItemBinder(viewModel, imageUrlMaker)
+            viewBinders[imageViewBinder!!.modelClass] = imageViewBinder as ItemBinder
+            imageViewerAdapter = BaseAdapter(viewBinders)
+        }
+        if (viewPager.adapter == null) {
+            viewPager.apply {
+                adapter = imageViewerAdapter
+            }
+        }
+        (viewPager.adapter as BaseAdapter).submitList(list?.toImmutableList() ?: emptyList())
+    }
 
 }

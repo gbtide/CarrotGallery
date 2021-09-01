@@ -3,6 +3,7 @@ package com.carrot.gallery
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -13,15 +14,15 @@ import javax.inject.Inject
 class SharedViewModel @Inject constructor(
 ) : ViewModel() {
 
-    private val _sharedList = MutableLiveData<List<Any>>()
-    val sharedList: LiveData<List<Any>>
+    private val _sharedList = MutableLiveData<List<Image>>()
+    val sharedList: LiveData<List<Image>>
         get() = _sharedList
 
-    fun onUpdateListAtGallery(list : List<Any>) {
+    fun onUpdateListAtGallery(list : List<Image>) {
         _sharedList.value = list
     }
 
-    fun onUpdateListAtImageViewer(list : List<Any>) {
+    fun onUpdateListAtImageViewer(list : List<Image>) {
         _sharedList.value = list
     }
 
