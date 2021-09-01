@@ -7,6 +7,10 @@
         <import type="androidx.lifecycle.LiveData" />
 
         <variable
+            name="position"
+            type="Integer" />
+
+        <variable
             name="image"
             type="com.carrot.gallery.ui.gallery.GalleryImage" />
 
@@ -26,7 +30,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{view -> eventListener.onClickImage(image)}"
+        android:onClick="@{view -> eventListener.onClickImage(image, position)}"
         >
 
         <com.facebook.shimmer.ShimmerFrameLayout

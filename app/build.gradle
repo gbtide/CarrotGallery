@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
-//apply plugin: "androidx.navigation.safeargs.kotlin"
+apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 android {
     compileSdkVersion project.compileSdkVersion
@@ -49,7 +49,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.appcompat:appcompat:${project.appcompat}"
     implementation "androidx.constraintlayout:constraintlayout:${project.constraintlayout}"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation "junit:junit:${project.junit}"
     androidTestImplementation "androidx.test.ext:junit:1.1.2"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
@@ -72,7 +71,6 @@ dependencies {
     implementation "com.google.dagger:hilt-android:${project.hilt_android}"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:${project.hilt_lifecycle_viewmodel}"
     kapt "com.google.dagger:hilt-android-compiler:${project.hilt_android_compiler}"
-//    kapt "androidx.hilt:hilt-compiler:${project.hilt_compiler}"
 
     // jakewharton Timber
     implementation "com.jakewharton.timber:timber:${project.timber}"
@@ -102,11 +100,9 @@ dependencies {
     // navigation
     implementation "androidx.navigation:navigation-fragment-ktx:${project.navigation}"
     implementation "androidx.navigation:navigation-ui-ktx:${project.navigation}"
-//    implementation "androidx.navigation:navigation-safe-args-gradle-plugin:${project.navigation}"
 
     // image viewer
     // 외부 라이브러리
-//    implementation "com.davemorrissey.labs:subsampling-scale-image-view-androidx:${project.imageviewer}"
     implementation "com.github.chrisbanes:PhotoView:${project.photoview}"
 
     // shimmer (loading view)

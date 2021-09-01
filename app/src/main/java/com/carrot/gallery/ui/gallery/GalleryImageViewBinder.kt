@@ -29,7 +29,7 @@ class GalleryImageViewBinder(
     }
 
     override fun bindViewHolder(model: GalleryImage, viewHolder: GalleryViewHolder) =
-        viewHolder.bind(model)
+        viewHolder.bind(model, viewHolder.adapterPosition)
 
     override fun getItemType(): Int = R.layout.item_gallery_image
 
@@ -47,8 +47,9 @@ class GalleryViewHolder(
     private val imageUrlMaker: ImageUrlMaker
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(galleryImage: GalleryImage) {
+    fun bind(galleryImage: GalleryImage, position: Int) {
         binding.image = galleryImage
+        binding.position = position
         binding.galleryColumnCount = GalleryCons.COLUMN_COUNT // 개선 포인트
         binding.eventListener = galleryItemClickListener
         binding.galleryThumbnailUrlMaker = imageUrlMaker

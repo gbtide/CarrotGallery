@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -20,29 +21,31 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
+import com.carrot.gallery.SharedViewModel
 import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
 import dagger.hilt.android.AndroidEntryPoint
-
+import timber.log.Timber
 
 /**
  * Created by kyunghoon on 2021-01
  */
 @AndroidEntryPoint
 class ImageViewerFragment : Fragment() {
+    private var imageId: Long = 0
+    private var position: Int = 0
 
-    companion object {
-        const val IMAGE_ID = "imageId"
-    }
-
-    private var imageId: Long = -1L
     private lateinit var binding: FragmentImageViewerBinding
     private val viewModel: ImageViewerViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         arguments?.let {
-            imageId = it.getSerializable(IMAGE_ID) as Long
+            imageId = ImageViewerFragmentArgs.fromBundle(it).id
+            position = ImageViewerFragmentArgs.fromBundle(it).position
         }
     }
 
@@ -87,6 +90,10 @@ class ImageViewerFragment : Fragment() {
     }
 
     private fun initViewModel() {
+        sharedViewModel.sharedList.observe(viewLifecycleOwner, { images ->
+            Timber.d("### aa " + images.count())
+        })
+
         viewModel.image.observe(viewLifecycleOwner, { image ->
             binding.image = image
             binding.executePendingBindings()

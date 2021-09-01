@@ -13,7 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.carrot.gallery.MainViewModel
+import com.carrot.gallery.SharedViewModel
 import com.carrot.gallery.R
 import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.databinding.FragmentGalleryBinding
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class GalleryFragment : Fragment() {
     private lateinit var binding: FragmentGalleryBinding
     private val viewModel: GalleryViewModel by viewModels()
-    private val mainActivityViewModel: MainViewModel by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
     private var galleryAdapter: GalleryAdapter? = null
 
     @Inject
@@ -70,8 +70,8 @@ class GalleryFragment : Fragment() {
         viewModel.observeSingleEvent(viewLifecycleOwner) {
             when (it) {
                 is GallerySingleEventType.GoToImageViewer -> {
-                    val bundle = bundleOf(ImageViewerFragment.IMAGE_ID to it.image.id)
-                    findNavController().navigate(R.id.to_image_viewer, bundle)
+                    val direction = GalleryFragmentDirections.toImageViewer(it.image.id, it.position)
+                    findNavController().navigate(direction)
                 }
             }
         }
@@ -79,6 +79,8 @@ class GalleryFragment : Fragment() {
         viewModel.images.observe(viewLifecycleOwner, { images ->
             addToGallery(binding.galleryRecyclerview, images)
             binding.refreshLayout.isRefreshing = false
+
+            sharedViewModel.onUpdateListAtGallery(images)
         })
 
         viewModel.errorViewShown.observe(viewLifecycleOwner, {

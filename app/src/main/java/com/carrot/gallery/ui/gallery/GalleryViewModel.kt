@@ -109,15 +109,15 @@ class GalleryViewModel @Inject constructor(
         requestFirstPage()
     }
 
-    override fun onClickImage(image: GalleryImage) {
-        notifySingleEvent(GallerySingleEventType.GoToImageViewer(image))
+    override fun onClickImage(image: GalleryImage, position: Int) {
+        notifySingleEvent(GallerySingleEventType.GoToImageViewer(image, position))
     }
 }
 
 interface GalleryItemClickListener {
-    fun onClickImage(image: GalleryImage)
+    fun onClickImage(image: GalleryImage, position: Int)
 }
 
 sealed class GallerySingleEventType : SingleEventType {
-    data class GoToImageViewer(val image: GalleryImage) : GallerySingleEventType()
+    data class GoToImageViewer(val image: GalleryImage, val position: Int) : GallerySingleEventType()
 }
