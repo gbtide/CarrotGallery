@@ -32,6 +32,7 @@ class GalleryViewModel @Inject constructor(
     companion object {
         private const val FIRST_IMAGE_PAGE_NO = 1
         private const val ITEM_COUNT_PER_PAGE = 30
+        private const val UNKNOWN_PAGE = -1
     }
 
     val images = MutableLiveData<MutableList<Image>>()
@@ -46,15 +47,21 @@ class GalleryViewModel @Inject constructor(
         CollectionUtils.isEmpty(it) || it.size < ITEM_COUNT_PER_PAGE
     }
 
-    private val dataFlowStatus = MutableLiveData<Result<Any>>()
+    private val dataFlowStatus = MutableLiveData<Result<List<Image>>>()
     val isLoading = dataFlowStatus.map { it is Result.Loading }
+    val isMoreLoading = dataFlowStatus.map { it is Result.Loading && (getCurrentPage() > FIRST_IMAGE_PAGE_NO) }
+    val errorViewShown = dataFlowStatus.map { isErrorOrDuringRecovery(it) }
+    val emptyViewShown = dataFlowStatus.map { isEmptyResultAtFirstPage(it, getCurrentPage()) }
 
-    val errorViewShown = dataFlowStatus.map { it is Result.Error }
-    val emptyViewShown = MutableLiveData<Boolean>()
+    // [ 고민 ] 더 좋은 방법이 있을지 고민을 하고 있습니다!
+    private val dummyObserver = Observer<Any>{}
+
 
     init {
-        images.value = mutableListOf()
+        dataFlowStatus.observeForever(dummyObserver)
+        isLastPage.observeForever(dummyObserver)
 
+        images.value = mutableListOf()
         imageViewDataList = currentPage.switchMap { page ->
             getImagesUseCase(GetImagesParameter(page, ITEM_COUNT_PER_PAGE))
                 .map {
@@ -63,11 +70,7 @@ class GalleryViewModel @Inject constructor(
                 }
                 .filter { it !is Result.Loading }
                 .filter { it !is Result.Error }
-                .filter {
-                    val emptyInFirstPage = it is Result.Success && (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(it.data))
-                    emptyViewShown.value = emptyInFirstPage
-                    return@filter !emptyInFirstPage
-                }
+                .filter {!isEmptyResultAtFirstPage(it, page)}
                 .map {
                     // Result.Success
                     val result = it.successOr(emptyList())
@@ -89,6 +92,20 @@ class GalleryViewModel @Inject constructor(
         currentPage.value = currentPage.value!! + 1
     }
 
+    private fun getCurrentPage(): Int {
+        return currentPage?.value ?: UNKNOWN_PAGE
+    }
+
+    private fun isEmptyResultAtFirstPage(result: Result<List<Image>>, page: Int) : Boolean {
+        return result is Result.Success
+                && (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(result.data))
+    }
+
+    private fun isErrorOrDuringRecovery(result: Result<List<Image>>) : Boolean {
+        return result is Result.Error
+                || (result is Result.Loading && errorViewShown.value == true)
+    }
+
     private suspend fun makeGalleryImagesFrom(data: List<Image>, page: Int): List<GalleryImageItemViewData> {
         val addedImages: List<GalleryImageItemViewData>
         withContext(idDispatcher) {
@@ -104,11 +121,12 @@ class GalleryViewModel @Inject constructor(
     }
 
     fun onReceiveLoadMoreSignal() {
-        if (isLastPage.value == true || isLoading.value == true) {
+        if (isLastPage.value == true || dataFlowStatus.value == Result.Loading) {
             return
         }
 
-        // memo. usecase 의 Result.Loading 로딩 판정보다 onReceiveLoadMoreSignal 재호출이 빠를 수 있어서 추가했습니다.
+        // memo. request next page 에 대한 usecase 의 Result.Loading 로딩 판정보다
+        // onReceiveLoadMoreSignal 재호출이 빠를 수 있어서 추가했습니다.
         dataFlowStatus.value = Result.Loading
         requestNextPage()
     }
@@ -119,6 +137,13 @@ class GalleryViewModel @Inject constructor(
 
     override fun onClickSimpleImage(image: GalleryImageItemViewData.SimpleImage, position: Int) {
         notifySingleEvent(GallerySingleEventType.GoToSimpleImageViewer(image, position))
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        dataFlowStatus.removeObserver(dummyObserver)
+        isLastPage.removeObserver(dummyObserver)
     }
 }
 

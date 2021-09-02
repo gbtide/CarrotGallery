@@ -7,8 +7,8 @@
         <import type="androidx.lifecycle.LiveData" />
 
         <variable
-            name="image"
-            type="com.carrot.gallery.ui.viewer.ImageViewerViewData" />
+            name="listener"
+            type="com.carrot.gallery.ui.viewer.ImageViewerSinglePageListener" />
 
     </data>
 
@@ -45,7 +45,23 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:photoTabListener="@{() -> listener.onSingleTabImage()}"
             />
+
+        <TextView
+            android:id="@+id/error_view"
+            style="@style/Widget.CarrotGallery.ErrorResults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:onClick="@{() -> listener.onClickReloadImageAtErrorView()}"
+            android:visibility="gone"
+            android:text="@string/error_and_retry_message"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

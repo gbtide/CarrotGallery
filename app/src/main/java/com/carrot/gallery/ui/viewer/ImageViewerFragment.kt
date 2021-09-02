@@ -15,13 +15,13 @@ import androidx.viewpager2.widget.ViewPager2
 import com.carrot.gallery.SharedViewModel
 import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.core.image.ImageUrlMaker
-import com.carrot.gallery.data.GalleryImageItemViewData
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
 import com.carrot.gallery.ui.BaseAdapter
 import com.carrot.gallery.ui.ItemBinder
 import com.carrot.gallery.ui.ItemClass
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -29,7 +29,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class ImageViewerFragment : Fragment() {
-    private var imageId: Long = 0
     private var position: Int = 0
 
     private lateinit var binding: FragmentImageViewerBinding
@@ -73,7 +72,7 @@ class ImageViewerFragment : Fragment() {
     private fun initView() {
         binding.imageViewerViewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                viewModel.onChangePosition(position)
+                viewModel.onChangePage(position)
             }
         })
         binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -83,13 +82,13 @@ class ImageViewerFragment : Fragment() {
         binding.bottomBarBlurSeekbar.max = ImageCons.BLUR_FILTER_MAX_VALUE
         binding.bottomBarBlurSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.onChangeBlurEffect(progress)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                viewModel.onChangeBlurEffect(binding.bottomBarBlurSeekbar.progress)
             }
         })
 
@@ -119,8 +118,8 @@ class ImageViewerFragment : Fragment() {
                     // https://developer.chrome.com/docs/android/custom-tabs/integration-guide/
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
                 }
-                is ImageViewerSingleEventType.NotifyDataChange -> {
-                    binding.imageViewerViewPager.adapter?.notifyDataSetChanged()
+                is ImageViewerSingleEventType.ReloadImage -> {
+                    binding.imageViewerViewPager.adapter?.notifyItemChanged(it.page)
                 }
             }
         }
