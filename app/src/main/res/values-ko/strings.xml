@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Carrot Gallery</string>
+    <string name="title_main">갤러리</string>
+    <string name="picker_image_empty">가져올 이미지가 없어요!</string>
+    <string name="error_and_retry_message">에러가 발생했어요.\n다시 시도해보세요!</string>
+    <string name="image_filter_grayscale">Grayscale</string>
+    <string name="image_filter_blur">Blur</string>
+    <string name="image_more_button">더보기</string>
+
+</resources>
