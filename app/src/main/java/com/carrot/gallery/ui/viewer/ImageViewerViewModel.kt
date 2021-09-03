@@ -51,8 +51,6 @@ class ImageViewerViewModel @Inject constructor(
     val currentImage: LiveData<ImageViewerViewData>
         get() = _currentImage
 
-    private val imageLoadStatus = MutableLiveData<Result<Any>>()
-
     private val _functionBarToggler = MutableLiveData<Boolean>()
     val functionBarToggler: LiveData<Boolean>
         get() = _functionBarToggler
@@ -139,18 +137,6 @@ class ImageViewerViewModel @Inject constructor(
         notifySingleEvent(ImageViewerSingleEventType.ReloadImage(position))
     }
 
-    override fun onLoadImageToView() {
-        imageLoadStatus.value = Result.Loading
-    }
-
-    override fun onSuccessLoadImageToView() {
-        imageLoadStatus.value = Result.createEmptySuccess()
-    }
-
-    override fun onFailureLoadImageToView() {
-        imageLoadStatus.value = Result.Error(Exception("Failured to load image at ImageViewer"))
-    }
-
     override fun onCleared() {
         super.onCleared()
         disposable.clear()
@@ -164,9 +150,6 @@ class ImageViewerViewModel @Inject constructor(
 interface ImageViewerSinglePageListener {
     fun onSingleTabImage()
     fun onClickReloadImageAtErrorView()
-    fun onLoadImageToView()
-    fun onSuccessLoadImageToView()
-    fun onFailureLoadImageToView()
 }
 
 sealed class ImageViewerSingleEventType : SingleEventType {

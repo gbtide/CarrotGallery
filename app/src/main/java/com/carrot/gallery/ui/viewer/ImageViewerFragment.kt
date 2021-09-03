@@ -96,8 +96,8 @@ class ImageViewerFragment : Fragment() {
 
     private fun initViewModel() {
         sharedViewModel.sharedList.observe(viewLifecycleOwner, { images ->
-            viewModel.onInitImages(images)
             sharedViewModel.sharedList.removeObservers(viewLifecycleOwner)
+            viewModel.onInitImages(images)
         })
 
         viewModel.images.observe(viewLifecycleOwner, { images ->

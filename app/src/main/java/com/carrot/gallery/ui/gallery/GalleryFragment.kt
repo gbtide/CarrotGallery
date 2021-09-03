@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -95,6 +96,12 @@ class GalleryFragment : Fragment() {
         })
 
         binding.viewModel = viewModel
+
+        sharedViewModel.sharedList.observe(viewLifecycleOwner, { images ->
+            sharedViewModel.sharedList.removeObservers(viewLifecycleOwner)
+            Toast.makeText(context, "images! $images", Toast.LENGTH_SHORT).show()
+        })
+
     }
 
     @Suppress("UNCHECKED_CAST")

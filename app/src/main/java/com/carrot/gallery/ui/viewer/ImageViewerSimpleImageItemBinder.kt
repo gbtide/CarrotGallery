@@ -76,7 +76,6 @@ class SimpleImageViewHolder(
                     binding.shimmerViewContainer.stopShimmer()
                     binding.shimmerViewContainer.visibility = View.GONE
                     binding.errorView.visibility = View.VISIBLE
-                    singlePageListener.onFailureLoadImageToView()
                     return true
                 }
 
