@@ -2,6 +2,7 @@ package com.carrot.gallery.core.image
 
 import android.content.Context
 import android.net.Uri
+import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.core.util.ScreenUtility
 
 /**
@@ -54,8 +55,9 @@ class LoremPicsumImageUrlMaker constructor(
     override fun addFilterEffectParam(url: String, blur: Int, grayscale: Boolean): String {
         val uri = Uri.parse(url)
         val builder: Uri.Builder = uri.buildUpon()
-        if (blur > 0) {
-            builder.appendQueryParameter("blur", blur.toString())
+        if (blur >= ImageCons.BLUR_FILTER_MIN_VALUE) {
+            val finalBlur = if (blur > ImageCons.BLUR_FILTER_MAX_VALUE) ImageCons.BLUR_FILTER_MAX_VALUE else blur
+            builder.appendQueryParameter("blur", finalBlur.toString())
         }
         if (grayscale) {
             builder.appendQueryParameter("grayscale", "")

@@ -5,7 +5,9 @@ package com.carrot.gallery.ui.gallery
  */
 object GalleryCons {
 
-    // 시간되면 디바이스 가로 세로 모드 대응하자
+    /**
+     * TODO : 디바이스 가로세로 대응
+     */
     const val COLUMN_COUNT = 3
 
 }

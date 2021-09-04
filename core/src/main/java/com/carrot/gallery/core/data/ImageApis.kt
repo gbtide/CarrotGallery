@@ -1,4 +1,4 @@
-package com.carrot.gallery.core.apis
+package com.carrot.gallery.core.data
 
 import com.carrot.gallery.model.response.ImageResponse
 import retrofit2.http.GET

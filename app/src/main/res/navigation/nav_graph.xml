@@ -14,20 +14,22 @@
         <action
             android:id="@+id/to_image_viewer"
             app:destination="@id/imageViewerFragment">
-            <argument
-                android:name="resource"
-                android:defaultValue="false"
-                app:argType="boolean" />
         </action>
-
-        <!-- other actions.. -->
 
     </fragment>
 
     <fragment
         android:id="@+id/imageViewerFragment"
         android:name="com.carrot.gallery.ui.viewer.ImageViewerFragment"
-        android:label="ImageViewerFragment" />
+        android:label="ImageViewerFragment" >
+
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0"
+            />
+
+    </fragment>
 
 
 </navigation>

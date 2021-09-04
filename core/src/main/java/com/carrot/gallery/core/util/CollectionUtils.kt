@@ -5,7 +5,7 @@ package com.carrot.gallery.core.util
  */
 object CollectionUtils {
 
-    fun isEmpty(collection: Collection<Any>): Boolean {
+    fun isEmpty(collection: Collection<Any>?): Boolean {
         return collection == null || collection.isEmpty()
     }
 }

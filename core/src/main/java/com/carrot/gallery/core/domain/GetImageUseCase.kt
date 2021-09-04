@@ -18,11 +18,11 @@ class GetImageUseCase @Inject constructor(
     @IoDispatcher dispatcher: CoroutineDispatcher
 ) : FlowUseCase<Long, Image>(dispatcher) {
 
-    override fun execute(id: Long): Flow<Result<Image>> = flow {
+    override fun execute(parameter: Long): Flow<Result<Image>> = flow {
         try {
             emit(Result.Loading)
 
-            val result = imageRepository.getImage(id)
+            val result = imageRepository.getImage(parameter)
             emit(Result.Success(result))
 
         } catch (e: Exception) {

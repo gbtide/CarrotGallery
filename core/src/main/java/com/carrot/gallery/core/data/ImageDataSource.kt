@@ -1,7 +1,5 @@
 package com.carrot.gallery.core.data
 
-import com.carrot.gallery.core.apis.ImageApis
-import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.model.response.ImageResponse
 import javax.inject.Inject
 
