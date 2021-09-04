@@ -34,6 +34,9 @@ import javax.inject.Inject
 class ImageViewerFragment : Fragment() {
 
     companion object {
+        // [ config change 대응 ]
+        // 고민 : ARG_KEY_POSITION 를 안쓰고 nav_graph.xml 의 android:name 을 쓰고 싶었으나,
+        // @string 으로는 해결이 안되는 것 같습니다. 고민 고민..
         const val ARG_KEY_POSITION = "position"
     }
 
@@ -145,9 +148,6 @@ class ImageViewerFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         arguments?.let {
-            // [ config change 대응 ]
-            // 고민 : ARG_KEY_POSITION 를 안쓰고 nav_graph.xml 의 android:name 을 쓰고 싶었으나,
-            // @string 으로는 해결이 안되는 것 같습니다. 고민 고민..
             it.putInt(ARG_KEY_POSITION, binding.imageViewerViewPager.currentItem)
         }
     }
