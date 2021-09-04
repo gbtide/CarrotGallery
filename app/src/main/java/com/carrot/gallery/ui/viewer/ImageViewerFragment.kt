@@ -101,7 +101,7 @@ class ImageViewerFragment : Fragment() {
         })
 
         viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->
-            initViewPager(binding.imageViewerViewPager, images)
+            addToViewPager(binding.imageViewerViewPager, images)
         })
 
         viewModel.observeSingleEvent(viewLifecycleOwner) {
@@ -123,29 +123,27 @@ class ImageViewerFragment : Fragment() {
         binding.viewModel = viewModel
     }
 
-    private fun initViewPager(viewPager: ViewPager2, list: List<ImageViewerViewData>?) {
-        addToViewPager(viewPager, list)
-        viewPager.setCurrentItem(args.position, false)
-    }
-
     @Suppress("UNCHECKED_CAST")
     private fun addToViewPager(viewPager: ViewPager2, list: List<ImageViewerViewData>?) {
-        if (imageViewerAdapter == null) {
+        val firstInit = imageViewerAdapter == null
+        if (firstInit) {
             val viewBinders = HashMap<ItemClass, ItemBinder>()
             val imageViewBinder = ImageViewerSimpleImageItemBinder(viewModel, imageUrlMaker)
             viewBinders[imageViewBinder.modelClass] = imageViewBinder as ItemBinder
             imageViewerAdapter = BaseAdapter(viewBinders)
-        }
-        if (viewPager.adapter == null) {
             viewPager.apply {
                 adapter = imageViewerAdapter
             }
         }
         (viewPager.adapter as BaseAdapter).submitList(list?.toImmutableList() ?: emptyList())
+
+        if (firstInit) {
+            viewPager.setCurrentItem(args.position, false)
+        }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         arguments?.let {
             it.putInt(ARG_KEY_POSITION, binding.imageViewerViewPager.currentItem)
         }
