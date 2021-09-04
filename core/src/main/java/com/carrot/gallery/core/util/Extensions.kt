@@ -22,3 +22,12 @@ fun <T> PublishSubject<T>.observeByDebounce(timeoutMilliseconds: Long, consumer:
             consumer.accept(value)
         }
 }
+
+fun <T> PublishSubject<T>.observeByFirstThrottle(timeoutMilliseconds: Long, consumer: Consumer<T>): Disposable {
+    return this
+        .throttleFirst(timeoutMilliseconds, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe { value ->
+            consumer.accept(value)
+        }
+}

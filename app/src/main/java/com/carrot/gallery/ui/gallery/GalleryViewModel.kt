@@ -11,6 +11,7 @@ import com.carrot.gallery.core.result.successOr
 import com.carrot.gallery.core.util.CollectionUtils
 import com.carrot.gallery.core.util.notifyObserver
 import com.carrot.gallery.core.util.observeByDebounce
+import com.carrot.gallery.core.util.observeByFirstThrottle
 import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -19,6 +20,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -38,18 +40,18 @@ class GalleryViewModel @Inject constructor(
 
     private val currentPage = MutableLiveData<Int>()
 
-    private val requestedImages = currentPage.switchMap { page ->
+    private val requestedImagesStream = currentPage.switchMap { page ->
         getImagesUseCase(GetImagesParameter(page, ITEM_COUNT_PER_PAGE)).asLiveData()
     }
 
-    val isMoreLoading = requestedImages.map { it is Result.Loading && (currentPage.value!! > FIRST_IMAGE_PAGE_NO) }
-    val errorViewShown = requestedImages.map { isErrorOrDuringRecovery(it) }
-    val emptyViewShown = requestedImages.map { isEmpty(it, currentPage.value!!) }
-
+    val isMoreLoading = requestedImagesStream.map { it is Result.Loading && (currentPage.value!! > FIRST_IMAGE_PAGE_NO) }
+    val errorViewShown = requestedImagesStream.map { isErrorOrDuringRecovery(it) }
+    val emptyViewShown = requestedImagesStream.map { isEmpty(it, currentPage.value!!) }
+    private val dummyObserver = Observer<Any>{}
 
     val images = MutableLiveData<List<Image>>()
 
-    private val addedImages: LiveData<List<Image>> = requestedImages.asFlow()
+    private val addedImages: LiveData<List<Image>> = requestedImagesStream.asFlow()
         .filter { it !is Result.Loading }
         .filter { it !is Result.Error }
         .map { it.successOr(emptyList()) }
@@ -57,8 +59,8 @@ class GalleryViewModel @Inject constructor(
 
     private val addedImagesObserver = Observer<List<Image>> { _addedImages ->
         // 1) add to old-list
-        val sum: List<Image> = images.value ?: mutableListOf()
-        images.value = sum + _addedImages
+        val oldList: List<Image> = images.value ?: mutableListOf()
+        images.value = oldList + _addedImages
         // 2) check "last page"
         isLastPage = _addedImages.size < ITEM_COUNT_PER_PAGE
     }
@@ -86,18 +88,20 @@ class GalleryViewModel @Inject constructor(
     init {
         addedImages.observeForever(addedImagesObserver)
         addedImageViewDataList.observeForever(addedImageViewDataListObserver)
+        errorViewShown.observeForever(dummyObserver)
 
         observeLoadMoreEvent()
         requestFirstPage()
     }
 
     private fun observeLoadMoreEvent() {
-        disposable.add(loadMoreEventPublisher.observeByDebounce(100) {
-            val isError = requestedImages.value is Result.Error
-            if (isError) {
-                retryPage()
-            } else {
-                requestNextPage()
+        disposable.add(loadMoreEventPublisher.observeByFirstThrottle(400) {
+            if (requestedImagesStream.value !is Result.Loading) {
+                if (requestedImagesStream.value is Result.Error) {
+                    retryPage()
+                } else {
+                    requestNextPage()
+                }
             }
         })
     }
@@ -125,7 +129,7 @@ class GalleryViewModel @Inject constructor(
     }
 
     fun onReceiveLoadMoreSignal() {
-        if (isLastPage || requestedImages.value == Result.Loading) {
+        if (isLastPage || requestedImagesStream.value == Result.Loading) {
             return
         }
         loadMoreEventPublisher.onNext(true)
@@ -143,6 +147,7 @@ class GalleryViewModel @Inject constructor(
         super.onCleared()
         addedImages.removeObserver(addedImagesObserver)
         addedImageViewDataList.removeObserver(addedImageViewDataListObserver)
+        errorViewShown.removeObserver(dummyObserver)
     }
 
 }
