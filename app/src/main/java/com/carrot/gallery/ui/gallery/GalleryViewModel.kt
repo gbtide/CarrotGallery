@@ -44,7 +44,7 @@ class GalleryViewModel @Inject constructor(
         getImagesUseCase(GetImagesParameter(page, ITEM_COUNT_PER_PAGE)).asLiveData()
     }
 
-    val isMoreLoading = requestedImagesStream.map { it is Result.Loading && (currentPage.value!! > FIRST_IMAGE_PAGE_NO) }
+    val moreLoadingShown = requestedImagesStream.map { it is Result.Loading && (currentPage.value!! > FIRST_IMAGE_PAGE_NO) }
     val errorViewShown = requestedImagesStream.map { isErrorOrDuringRecovery(it) }
     val emptyViewShown = requestedImagesStream.map { isEmpty(it, currentPage.value!!) }
     private val dummyObserver = Observer<Any>{}
