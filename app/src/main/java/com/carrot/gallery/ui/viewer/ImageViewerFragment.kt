@@ -97,7 +97,6 @@ class ImageViewerFragment : Fragment() {
 
     private fun initViewModel() {
         sharedViewModel.galleryImagesFromGallery.observeOnce(viewLifecycleOwner, { images ->
-            Timber.d("### Viewer : %s", images)
             viewModel.onReceiveImagesFromGallery(images)
         })
 

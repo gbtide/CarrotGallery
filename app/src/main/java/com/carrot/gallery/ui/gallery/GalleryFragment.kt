@@ -106,7 +106,6 @@ class GalleryFragment : Fragment() {
         binding.viewModel = viewModel
 
         sharedViewModel.selectedPageFromImageViewer.observeOnce(viewLifecycleOwner, { position ->
-            Timber.d("### Gallery : %s", position)
             (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
                 ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2 / 5f).toInt())
         })
