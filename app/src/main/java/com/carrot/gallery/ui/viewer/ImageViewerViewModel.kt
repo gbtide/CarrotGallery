@@ -4,15 +4,12 @@ import androidx.lifecycle.*
 import com.carrot.gallery.core.domain.GetImagesUseCase
 import com.carrot.gallery.core.event.SingleEventType
 import com.carrot.gallery.core.event.ViewModelSingleEventsDelegate
-import com.carrot.gallery.core.result.Result
 import com.carrot.gallery.core.util.observeByDebounce
 import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.subjects.PublishSubject
-import java.util.concurrent.TimeUnit
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -21,30 +18,22 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ImageViewerViewModel @Inject constructor(
-    private val getImagesUseCase: GetImagesUseCase,
     private val singleEventDelegate: ViewModelSingleEventsDelegate,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel(), ImageViewerSinglePageListener, ViewModelSingleEventsDelegate by singleEventDelegate {
-    companion object {
-        private const val TAG = "ImageViewerViewModel"
+
+    private val images = MutableLiveData<List<Image>>()
+
+    val imageViewDataList = images.map { diff ->
+        ImageViewerViewDataMapper.toImageViewerViewDataList(diff)
     }
 
-    private var position: Int = 0
+    private val position = MutableLiveData<Int>()
 
-    private val _images = MutableLiveData<List<Image>>()
-    val images: LiveData<List<Image>>
-        get() = _images
-
-    private var oldImages: List<Image>? = null
-
-    private val imageDiff: LiveData<List<Image>> = images.map {
-        val oldSize = oldImages?.size ?: 0
-        val diff = if (it.size > oldSize) it.subList(oldSize, it.size) else emptyList()
-        oldImages = it
-        return@map diff
-    }
-
-    val imageViewDataList = imageDiff.map { diff ->
-        return@map sumToImageViewDataList(diff)
+    private val positionObserver = Observer<Int> { _position ->
+        this.imageViewDataList.value?.let {
+            _currentImage.value = it[_position]
+        }
     }
 
     private val _currentImage = MutableLiveData<ImageViewerViewData>()
@@ -63,33 +52,22 @@ class ImageViewerViewModel @Inject constructor(
     init {
         _functionBarToggler.value = true
 
+        position.observeForever(positionObserver)
+
         observeBlurEffectValue()
         observeGrayscaleEffectValue()
     }
 
-    fun onViewCreated(position: Int) {
-        this.position = position
-    }
-
     fun onInitImages(images: List<Image>) {
-        this._images.value = images
+        this.images.value = images
     }
 
-    private fun sumToImageViewDataList(diff: List<Image>): List<ImageViewerViewData> {
-        val oldList: List<ImageViewerViewData> = imageViewDataList.value ?: emptyList()
-        return oldList + ImageViewerViewDataMapper.toImageViewerViewDataList(diff)
-    }
-
-    /**
-     * memo. ImageViewerViewData 내부 blur 를 ObservableInt, ObservableBoolean 로 정리하면 ReloadImage 싱글 이벤트 액션을 없앨 수는 있으나
-     * 성능, 가독성 면에서 지금도 나쁘지 않다고 판단했습니다.
-     */
     private fun observeBlurEffectValue() {
         disposable.add(blurEffectSeekEventPublisher.observeByDebounce(500) { blurValue ->
-            _currentImage.value?.let {
+            _currentImage.value?.let { it ->
                 if (it.blur != blurValue) {
                     it.blur = blurValue
-                    notifySingleEvent(ImageViewerSingleEventType.ReloadImage(position))
+                    reloadCurrentImage()
                 }
             }
         })
@@ -97,18 +75,23 @@ class ImageViewerViewModel @Inject constructor(
 
     private fun observeGrayscaleEffectValue() {
         disposable.add(grayscaleSwitchEventPublisher.observeByDebounce(500) { onEffect ->
-            _currentImage.value?.let {
+            _currentImage.value?.let { it ->
                 if (it.grayscale != onEffect) {
                     it.grayscale = onEffect
-                    notifySingleEvent(ImageViewerSingleEventType.ReloadImage(position))
+                    reloadCurrentImage()
                 }
             }
         })
     }
 
-    fun onChangePage(position: Int) {
-        this.position = position
-        _currentImage.value = this.imageViewDataList.value!![position]
+    private fun reloadCurrentImage() {
+        position.value?.let { pos ->
+            notifySingleEvent(ImageViewerSingleEventType.ReloadImage(pos))
+        }
+    }
+
+    fun onPageSelected(position: Int) {
+        this.position.value = position
     }
 
     fun onChangeBlurEffect(blurValue: Int) {
@@ -134,12 +117,13 @@ class ImageViewerViewModel @Inject constructor(
     }
 
     override fun onClickReloadImageAtErrorView() {
-        notifySingleEvent(ImageViewerSingleEventType.ReloadImage(position))
+        reloadCurrentImage()
     }
 
     override fun onCleared() {
         super.onCleared()
         disposable.clear()
+        position.removeObserver(positionObserver)
     }
 
 }

@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -38,53 +39,55 @@ class GalleryViewModel @Inject constructor(
         private const val ITEM_COUNT_PER_PAGE = 30
     }
 
-    val images = MutableLiveData<MutableList<Image>>()
-    private val addedImages: LiveData<List<Image>>
-    private val addedImagesObserver = Observer<List<Image>> { _addedImages ->
-        images.value = images.value?.run {
-            addAll(_addedImages)
-            this
-        } ?: mutableListOf()
+    val currentPage = MutableLiveData<Int>()
 
+    private val requestedImages = currentPage.switchMap { page ->
+        getImagesUseCase(GetImagesParameter(page, ITEM_COUNT_PER_PAGE)).asLiveData()
+    }
+
+    val isMoreLoading = requestedImages.map { it is Result.Loading && (currentPage.value!! > FIRST_IMAGE_PAGE_NO) }
+    val errorViewShown = requestedImages.map { isErrorOrDuringRecovery(it) }
+    val emptyViewShown = requestedImages.map { isEmpty(it, currentPage.value!!) }
+
+
+    val images = MutableLiveData<List<Image>>()
+
+    private val addedImages: LiveData<List<Image>> = requestedImages.asFlow()
+        .filter { it !is Result.Loading }
+        .filter { it !is Result.Error }
+        .map { it.successOr(emptyList()) }
+        .asLiveData()
+
+    private val addedImagesObserver = Observer<List<Image>> { _addedImages ->
+        // 1) add to old-list
+        val sum: List<Image> = images.value ?: mutableListOf()
+        images.value = sum + _addedImages
+        // 2) check "last page"
         isLastPage = _addedImages.size < ITEM_COUNT_PER_PAGE
     }
 
+
     val imageViewDataList = MutableLiveData<List<GalleryImageItemViewData>>()
-    private val addedImageViewDataList: LiveData<List<GalleryImageItemViewData>>
+
+    private val addedImageViewDataList: LiveData<List<GalleryImageItemViewData>> = addedImages.asFlow()
+        .map { _addedImages ->
+            withContext(idDispatcher) {
+                GalleryImageItemViewDataMapper.toSimpleImages(_addedImages)
+            }
+        }.asLiveData()
+
     private val addedImageViewDataListObserver = Observer<List<GalleryImageItemViewData>> { _addedViewDataList ->
-        imageViewDataList.value = if (currentPage.value == FIRST_IMAGE_PAGE_NO) _addedViewDataList else imageViewDataList.value!! + _addedViewDataList
+        // 1) add to old-list
+        imageViewDataList.value = if (currentPage.value!! == FIRST_IMAGE_PAGE_NO) _addedViewDataList else imageViewDataList.value!! + _addedViewDataList
     }
 
-    private val currentPage = MutableLiveData<Int>()
     private var isLastPage = false
-
-    private val requestedImageFlow: LiveData<Result<List<Image>>> = currentPage.switchMap { page ->
-        getImagesUseCase(GetImagesParameter(page, ITEM_COUNT_PER_PAGE)).asLiveData()
-    }
-    val isMoreLoading  = requestedImageFlow.map { it is Result.Loading && (currentPage.value!! > FIRST_IMAGE_PAGE_NO) }
-    val errorViewShown = requestedImageFlow.map { isErrorOrDuringRecovery(it) }
-    val emptyViewShown = requestedImageFlow.map { isEmpty(it, currentPage.value!!) }
-
     private val loadMoreEventPublisher: PublishSubject<Boolean> = PublishSubject.create()
     private val disposable = CompositeDisposable()
 
 
     init {
-        addedImages = requestedImageFlow.asFlow()
-            .filter { it !is Result.Loading }
-            .filter { it !is Result.Error }
-            .map { it.successOr(emptyList()) }
-            .asLiveData()
-
         addedImages.observeForever(addedImagesObserver)
-
-        addedImageViewDataList = addedImages.asFlow()
-            .map { _addedImages ->
-                withContext(idDispatcher) {
-                    GalleryImageItemViewDataMapper.toSimpleImages(_addedImages)
-                }
-            }.asLiveData()
-
         addedImageViewDataList.observeForever(addedImageViewDataListObserver)
 
         observeLoadMoreEvent()
@@ -93,7 +96,7 @@ class GalleryViewModel @Inject constructor(
 
     private fun observeLoadMoreEvent() {
         disposable.add(loadMoreEventPublisher.observeByDebounce(500) {
-            val isError = requestedImageFlow.value is Result.Error
+            val isError = requestedImages.value is Result.Error
             if (isError) {
                 retryPage()
             } else {
@@ -125,7 +128,7 @@ class GalleryViewModel @Inject constructor(
     }
 
     fun onReceiveLoadMoreSignal() {
-        if (isLastPage || requestedImageFlow.value == Result.Loading) {
+        if (isLastPage || requestedImages.value == Result.Loading) {
             return
         }
         loadMoreEventPublisher.onNext(true)

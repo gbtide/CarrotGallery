@@ -7,10 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.carrot.gallery.SharedViewModel
 import com.carrot.gallery.core.domain.ImageCons
@@ -19,6 +21,7 @@ import com.carrot.gallery.databinding.FragmentImageViewerBinding
 import com.carrot.gallery.ui.BaseAdapter
 import com.carrot.gallery.ui.ItemBinder
 import com.carrot.gallery.ui.ItemClass
+import com.carrot.gallery.util.observeOnce
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
 import timber.log.Timber
@@ -29,7 +32,12 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class ImageViewerFragment : Fragment() {
-    private var position: Int = 0
+
+    companion object {
+        const val ARG_KEY_POSITION = "position"
+    }
+
+    private val args : ImageViewerFragmentArgs by navArgs()
 
     private lateinit var binding: FragmentImageViewerBinding
     private val viewModel: ImageViewerViewModel by viewModels()
@@ -41,19 +49,11 @@ class ImageViewerFragment : Fragment() {
     @Inject
     lateinit var imageUrlMaker: ImageUrlMaker
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            position = ImageViewerFragmentArgs.fromBundle(it).position
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         binding = FragmentImageViewerBinding.inflate(inflater, container, false)
             .apply {
                 lifecycleOwner = viewLifecycleOwner
@@ -66,13 +66,13 @@ class ImageViewerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initViewModel()
-        viewModel.onViewCreated(position)
     }
 
     private fun initView() {
         binding.imageViewerViewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                viewModel.onChangePage(position)
+                viewModel.onPageSelected(position)
+                sharedViewModel.onPageSelectedAtImageViewer(position)
             }
         })
         binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -95,13 +95,8 @@ class ImageViewerFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        sharedViewModel.sharedList.observe(viewLifecycleOwner, { images ->
-            sharedViewModel.sharedList.removeObservers(viewLifecycleOwner)
+        sharedViewModel.galleryImages.observeOnce(viewLifecycleOwner, { images ->
             viewModel.onInitImages(images)
-        })
-
-        viewModel.images.observe(viewLifecycleOwner, { images ->
-            sharedViewModel.onUpdateListAtImageViewer(images)
         })
 
         viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->
@@ -114,7 +109,7 @@ class ImageViewerFragment : Fragment() {
                     findNavController().popBackStack()
                 }
                 is ImageViewerSingleEventType.ClickMoreButton -> {
-                    // TODO custom tab 변경
+                    // TODO 시간되면 custom tab 으로 변경
                     // https://developer.chrome.com/docs/android/custom-tabs/integration-guide/
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
                 }
@@ -129,7 +124,7 @@ class ImageViewerFragment : Fragment() {
 
     private fun initViewPager(viewPager: ViewPager2, list: List<ImageViewerViewData>?) {
         addToViewPager(viewPager, list)
-        viewPager.setCurrentItem(position, false)
+        viewPager.setCurrentItem(args.position, false)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -146,6 +141,16 @@ class ImageViewerFragment : Fragment() {
             }
         }
         (viewPager.adapter as BaseAdapter).submitList(list?.toImmutableList() ?: emptyList())
+    }
+
+    override fun onStop() {
+        super.onStop()
+        arguments?.let {
+            // [ config change 대응 ]
+            // 고민 : ARG_KEY_POSITION 를 안쓰고 nav_graph.xml 의 android:name 을 쓰고 싶었으나,
+            // @string 으로는 해결이 안되는 것 같습니다. 고민 고민..
+            it.putInt(ARG_KEY_POSITION, binding.imageViewerViewPager.currentItem)
+        }
     }
 
 }

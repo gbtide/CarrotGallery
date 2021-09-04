@@ -5,7 +5,6 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -15,11 +14,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carrot.gallery.SharedViewModel
 import com.carrot.gallery.core.image.ImageUrlMaker
+import com.carrot.gallery.core.util.ScreenUtility
 import com.carrot.gallery.data.GalleryImageItemViewData
 import com.carrot.gallery.databinding.FragmentGalleryBinding
 import com.carrot.gallery.ui.BaseAdapter
 import com.carrot.gallery.ui.ItemBinder
 import com.carrot.gallery.ui.ItemClass
+import com.carrot.gallery.util.observeOnce
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
@@ -36,10 +37,6 @@ class GalleryFragment : Fragment() {
     @Inject
     lateinit var imageUrlMaker: ImageUrlMaker
 
-    /**
-     * TODO 네비게이션 BACK 을 쓰면 layoutManagerState를 항상 관리해줘야하나..
-     * 그렇지 않을 것 같다. 찾아보자.
-     */
     private var layoutManagerState: Parcelable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,25 +58,34 @@ class GalleryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        init()
-    }
-
-    private fun init() {
+        initView()
         initViewModel()
     }
 
-    private fun initViewModel() {
-        viewModel.observeSingleEvent(viewLifecycleOwner) {
-            when (it) {
-                is GallerySingleEventType.GoToSimpleImageViewer -> {
-                    val direction = GalleryFragmentDirections.toImageViewer(it.position)
-                    findNavController().navigate(direction)
+    private fun initView() {
+        val viewBinders = HashMap<ItemClass, ItemBinder>()
+
+        val imageViewBinder = GallerySimpleImageItemBinder(viewModel, imageUrlMaker)
+        viewBinders[imageViewBinder.modelClass] = imageViewBinder as ItemBinder
+        galleryAdapter = BaseAdapter(viewBinders)
+        binding.galleryRecyclerview.apply {
+            adapter = galleryAdapter
+            layoutManager = GridLayoutManager(context, GalleryCons.COLUMN_COUNT)
+            addOnScrollListener(object : GridLoadMoreListener() {
+                override fun onLoadMore() {
+                    viewModel.onReceiveLoadMoreSignal()
                 }
-            }
+            })
         }
 
+        layoutManagerState?.let {
+            binding.galleryRecyclerview.layoutManager?.onRestoreInstanceState(layoutManagerState)
+        }
+    }
+
+    private fun initViewModel() {
         viewModel.images.observe(viewLifecycleOwner, { images ->
-            sharedViewModel.onUpdateListAtGallery(images)
+            sharedViewModel.onUpdateImagesAtGallery(images)
         })
 
         viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->
@@ -95,39 +101,27 @@ class GalleryFragment : Fragment() {
             binding.refreshLayout.isRefreshing = false
         })
 
+        viewModel.observeSingleEvent(viewLifecycleOwner) {
+            when (it) {
+                is GallerySingleEventType.GoToSimpleImageViewer -> {
+                    val direction = GalleryFragmentDirections.toImageViewer(it.position)
+                    findNavController().navigate(direction)
+                }
+            }
+        }
+
         binding.viewModel = viewModel
 
-        sharedViewModel.sharedList.observe(viewLifecycleOwner, { images ->
-            sharedViewModel.sharedList.removeObservers(viewLifecycleOwner)
-            Toast.makeText(context, "images! $images", Toast.LENGTH_SHORT).show()
+        sharedViewModel.recentlySelectedPageFromImageViewer.observeOnce(viewLifecycleOwner, { position ->
+            position?.let {
+                (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
+                    ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2/5f).toInt())
+            }
         })
-
     }
 
     @Suppress("UNCHECKED_CAST")
     private fun addToGallery(recyclerView: RecyclerView, list: List<GalleryImageItemViewData>?) {
-        if (galleryAdapter == null) {
-            val viewBinders = HashMap<ItemClass, ItemBinder>()
-
-            val imageViewBinder = GallerySimpleImageItemBinder(viewModel, imageUrlMaker)
-            viewBinders[imageViewBinder.modelClass] = imageViewBinder as ItemBinder
-            galleryAdapter = BaseAdapter(viewBinders)
-        }
-        if (recyclerView.adapter == null) {
-            recyclerView.apply {
-                adapter = galleryAdapter
-                layoutManager = GridLayoutManager(context, GalleryCons.COLUMN_COUNT)
-                addOnScrollListener(object : GridLoadMoreListener() {
-                    override fun onLoadMore() {
-                        viewModel.onReceiveLoadMoreSignal()
-                    }
-                })
-            }
-            layoutManagerState?.let {
-                binding.galleryRecyclerview.layoutManager?.onRestoreInstanceState(layoutManagerState)
-            }
-
-        }
         (recyclerView.adapter as BaseAdapter).submitList(list?.toImmutableList() ?: emptyList())
 
         // 체크!

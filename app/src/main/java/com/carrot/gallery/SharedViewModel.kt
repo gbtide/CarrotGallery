@@ -1,5 +1,6 @@
 package com.carrot.gallery
 
+import android.util.ArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,16 +15,60 @@ import javax.inject.Inject
 class SharedViewModel @Inject constructor(
 ) : ViewModel() {
 
-    private val _sharedList = MutableLiveData<List<Image>>()
-    val sharedList: LiveData<List<Image>>
-        get() = _sharedList
-
-    fun onUpdateListAtGallery(list : List<Image>) {
-        _sharedList.value = list
+    companion object {
+        const val START_VERSION = 0
+        const val KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER = "KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER"
     }
 
-    fun onUpdateListAtImageViewer(list : List<Image>) {
-        _sharedList.value = list
+    private val dataVersions = ArrayMap<String, Int>()
+
+    private val _galleryImages = MutableLiveData<List<Image>>()
+    val galleryImages: LiveData<List<Image>>
+        get() = _galleryImages
+
+    private val _selectedPageFromImageViewer = MutableLiveData<Data<Int>>()
+
+    /**
+     * 1회성으로 notify 합니다.
+     * configuration chanage 등에 대응할 수 있습니다.
+     *
+     * TODO : SingleUseLiveData 등으로 모듈화 가능할 것 같습니다.
+     */
+    val recentlySelectedPageFromImageViewer: LiveData<Int>
+        get() = getSelectedPageFromImageViewerIfExist()
+
+
+
+    fun onUpdateImagesAtGallery(list : List<Image>) {
+        _galleryImages.value = list
+    }
+
+    fun onPageSelectedAtImageViewer(page: Int) {
+        _selectedPageFromImageViewer.value = Data(page, getVersion(KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER) + 1)
+    }
+
+    private fun getSelectedPageFromImageViewerIfExist(): LiveData<Int> {
+        _selectedPageFromImageViewer.value?.let { selectedPageData ->
+            if (selectedPageData.version > getVersion(KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER)) {
+                dataVersions[KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER] = selectedPageData.version
+                val data = MutableLiveData<Int>()
+                data.value = selectedPageData.data
+                return data
+            }
+        }
+
+        // return dummy
+        return MutableLiveData()
+    }
+
+    private fun getVersion(key: String): Int {
+        dataVersions[key]?.let {
+            return it
+        }
+        dataVersions[key] = START_VERSION
+        return START_VERSION
     }
 
 }
+
+data class Data<T>(val data: T, val version: Int)
