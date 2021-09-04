@@ -16,8 +16,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ImageViewerViewModel @Inject constructor(
-    private val singleEventDelegate: ViewModelSingleEventsDelegate,
-    savedStateHandle: SavedStateHandle
+    private val singleEventDelegate: ViewModelSingleEventsDelegate
+//    savedStateHandle: SavedStateHandle
 ) : ViewModel(), ImageViewerSinglePageListener, ViewModelSingleEventsDelegate by singleEventDelegate {
 
     private val images = MutableLiveData<List<Image>>()

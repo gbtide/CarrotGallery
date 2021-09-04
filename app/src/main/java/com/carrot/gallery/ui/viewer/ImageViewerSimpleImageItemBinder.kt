@@ -38,7 +38,7 @@ class ImageViewerSimpleImageItemBinder(
         )
     }
 
-    override fun bindViewHolder(model: ImageViewerViewData, viewHolder: SimpleImageViewHolder) = viewHolder.bind(model, viewHolder.adapterPosition)
+    override fun bindViewHolder(model: ImageViewerViewData, viewHolder: SimpleImageViewHolder) = viewHolder.bind(model)
 
     override fun getItemType(): Int = R.layout.item_image_viewer_simple_image
 
@@ -54,7 +54,7 @@ class SimpleImageViewHolder(
     private val imageUrlMaker: ImageUrlMaker,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(simpleImage: ImageViewerViewData, position: Int) {
+    fun bind(simpleImage: ImageViewerViewData) {
         /**
          * [ ViewPager2 기본 스펙 테스트 ]
          *
