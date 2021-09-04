@@ -32,7 +32,7 @@ class SharedViewModel @Inject constructor(
      * 1회성으로 notify 합니다.
      * configuration chanage 등에 대응할 수 있습니다.
      *
-     * TODO : SingleUseLiveData 등으로 모듈화 가능할 것 같습니다.
+     * TODO : 네이밍을 SingleUseLiveData 등으로 해서 모듈화 가능할 것 같습니다.
      */
     val recentlySelectedPageFromImageViewer: LiveData<Int>
         get() = getSelectedPageFromImageViewerIfExist()

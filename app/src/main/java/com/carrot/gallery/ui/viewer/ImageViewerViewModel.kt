@@ -1,7 +1,6 @@
 package com.carrot.gallery.ui.viewer
 
 import androidx.lifecycle.*
-import com.carrot.gallery.core.domain.GetImagesUseCase
 import com.carrot.gallery.core.event.SingleEventType
 import com.carrot.gallery.core.event.ViewModelSingleEventsDelegate
 import com.carrot.gallery.core.util.observeByDebounce
@@ -9,7 +8,6 @@ import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.subjects.PublishSubject
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -23,9 +21,18 @@ class ImageViewerViewModel @Inject constructor(
 ) : ViewModel(), ImageViewerSinglePageListener, ViewModelSingleEventsDelegate by singleEventDelegate {
 
     private val images = MutableLiveData<List<Image>>()
+    private var oldImages: List<Image>? = null
+    private val imageDiff = MutableLiveData<List<Image>>()
 
-    val imageViewDataList = images.map { diff ->
-        ImageViewerViewDataMapper.toImageViewerViewDataList(diff)
+    private val imagesObserver = Observer<List<Image>> { _images ->
+        val oldSize = oldImages?.size ?: 0
+        val diff = if (_images.size > oldSize) _images.subList(oldSize, _images.size) else emptyList()
+        oldImages = _images
+        imageDiff.value = diff
+    }
+
+    val imageViewDataList = imageDiff.map { diff ->
+        return@map sumAtImageViewDataList(diff)
     }
 
     private val position = MutableLiveData<Int>()
@@ -52,6 +59,7 @@ class ImageViewerViewModel @Inject constructor(
     init {
         _functionBarToggler.value = true
 
+        images.observeForever(imagesObserver)
         position.observeForever(positionObserver)
 
         observeBlurEffectValue()
@@ -60,6 +68,11 @@ class ImageViewerViewModel @Inject constructor(
 
     fun onInitImages(images: List<Image>) {
         this.images.value = images
+    }
+
+    private fun sumAtImageViewDataList(diff: List<Image>): List<ImageViewerViewData> {
+        val oldList = imageViewDataList.value ?: emptyList()
+        return oldList + ImageViewerViewDataMapper.toImageViewerViewDataList(diff)
     }
 
     private fun observeBlurEffectValue() {
@@ -123,6 +136,7 @@ class ImageViewerViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         disposable.clear()
+        images.removeObserver(imagesObserver)
         position.removeObserver(positionObserver)
     }
 

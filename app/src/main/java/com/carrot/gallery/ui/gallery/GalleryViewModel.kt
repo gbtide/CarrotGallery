@@ -39,7 +39,7 @@ class GalleryViewModel @Inject constructor(
         private const val ITEM_COUNT_PER_PAGE = 30
     }
 
-    val currentPage = MutableLiveData<Int>()
+    private val currentPage = MutableLiveData<Int>()
 
     private val requestedImages = currentPage.switchMap { page ->
         getImagesUseCase(GetImagesParameter(page, ITEM_COUNT_PER_PAGE)).asLiveData()
@@ -95,7 +95,7 @@ class GalleryViewModel @Inject constructor(
     }
 
     private fun observeLoadMoreEvent() {
-        disposable.add(loadMoreEventPublisher.observeByDebounce(500) {
+        disposable.add(loadMoreEventPublisher.observeByDebounce(100) {
             val isError = requestedImages.value is Result.Error
             if (isError) {
                 retryPage()
