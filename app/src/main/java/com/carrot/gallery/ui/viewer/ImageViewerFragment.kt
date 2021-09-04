@@ -7,14 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
-import com.carrot.gallery.SharedViewModel
+import com.carrot.gallery.ui.SharedViewModel
 import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
@@ -56,6 +55,8 @@ class ImageViewerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Timber.d("### ImageViewerFragment : " + this)
+
         binding = FragmentImageViewerBinding.inflate(inflater, container, false)
             .apply {
                 lifecycleOwner = viewLifecycleOwner
@@ -97,8 +98,10 @@ class ImageViewerFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        sharedViewModel.galleryImages.observeOnce(viewLifecycleOwner, { images ->
-            viewModel.onInitImages(images)
+        sharedViewModel.galleryImagesFromGallery.observeOnce(viewLifecycleOwner, { images ->
+            images?.let {
+                viewModel.onReceiveImagesFromGallery(it)
+            }
         })
 
         viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->

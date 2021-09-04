@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.carrot.gallery.SharedViewModel
+import com.carrot.gallery.ui.SharedViewModel
 import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.core.util.ScreenUtility
 import com.carrot.gallery.databinding.FragmentGalleryBinding
@@ -113,7 +112,6 @@ class GalleryFragment : Fragment() {
         })
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun addToGallery(recyclerView: RecyclerView, list: List<GalleryImageItemViewData>?) {
         (recyclerView.adapter as BaseAdapter).submitList(list?.toImmutableList() ?: emptyList())
 
@@ -128,9 +126,9 @@ class GalleryFragment : Fragment() {
          * 1. cold start : 5s 이상
          * 2. hot start : 1.5s 이상
          */
-        recyclerView.doOnLayout {
-            activity?.reportFullyDrawn()
-        }
+//        recyclerView.doOnLayout {
+//            activity?.reportFullyDrawn()
+//        }
     }
 
 
