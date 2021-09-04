@@ -7,6 +7,14 @@
         <import type="androidx.lifecycle.LiveData" />
 
         <variable
+            name="viewData"
+            type="com.carrot.gallery.ui.viewer.ImageViewerViewData" />
+
+        <variable
+            name="urlMaker"
+            type="com.carrot.gallery.core.image.ImageUrlMaker" />
+
+        <variable
             name="listener"
             type="com.carrot.gallery.ui.viewer.ImageViewerSinglePageListener" />
 
@@ -45,6 +53,10 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:photoTabListener="@{() -> listener.onSingleTabImage()}"
+            app:imageViewerViewData="@{viewData}"
+            app:imageViewerThumbnailUrlMaker="@{urlMaker}"
+            app:imageViewerShimmerView="@{shimmerViewContainer}"
+            app:imageViewerErrorView="@{errorView}"
             />
 
         <TextView

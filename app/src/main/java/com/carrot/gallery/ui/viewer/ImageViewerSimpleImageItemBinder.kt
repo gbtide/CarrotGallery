@@ -54,7 +54,7 @@ class SimpleImageViewHolder(
     private val imageUrlMaker: ImageUrlMaker,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(simpleImage: ImageViewerViewData) {
+    fun bind(viewData: ImageViewerViewData) {
         /**
          * [ ViewPager2 기본 스펙 테스트 ]
          *
@@ -65,55 +65,10 @@ class SimpleImageViewHolder(
          * - 결국 현재 페이지만 Re-load 하고 싶으면 ObserverField 를 쓰거나, notifyItemChanged(page) 를 쓰도록 하자.
          */
 
-        prepareImageLoad()
-
-        Glide.with(binding.imageViewerView.context)
-            .asBitmap()
-            .load(getCompletedUrl(simpleImage))
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .listener(object : RequestListener<Bitmap> {
-                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                    binding.shimmerViewContainer.stopShimmer()
-                    binding.shimmerViewContainer.visibility = View.GONE
-                    binding.errorView.visibility = View.VISIBLE
-                    return true
-                }
-
-                override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                    binding.shimmerViewContainer.stopShimmer()
-                    binding.shimmerViewContainer.visibility = View.GONE
-                    binding.errorView.visibility = View.GONE
-                    return false
-                }
-            })
-            // memo. blink 이슈로 .into(binding.imageViewerView) 를 쓰지 않았습니다.
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
-                    binding.imageViewerView.setImageBitmap(bitmap)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-            })
-
+        binding.viewData = viewData
+        binding.urlMaker = imageUrlMaker
         binding.listener = singlePageListener
         binding.executePendingBindings()
-    }
-
-    private fun prepareImageLoad() {
-        binding.imageViewerView.setImageDrawable(null)
-        binding.errorView.visibility = View.GONE
-        binding.shimmerViewContainer.visibility = View.VISIBLE
-        binding.shimmerViewContainer.setShimmer(CustomShimmer.imageViewerCustomShimmer)
-        binding.shimmerViewContainer.startShimmer()
-    }
-
-    private fun getCompletedUrl(simpleImage: ImageViewerViewData): String {
-        return imageUrlMaker.addFilterEffectParam(
-            imageUrlMaker.addAdjustSizeParam(simpleImage.urlWithoutSize, simpleImage.width, simpleImage.height),
-            simpleImage.blur,
-            simpleImage.grayscale
-        )
     }
 
 }

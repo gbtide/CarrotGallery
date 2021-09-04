@@ -124,7 +124,7 @@ class GalleryFragment : Fragment() {
          * 2. hot start : 500ms ~ 600ms
          *
          * [ 참고 ]
-         * Android vitals 기준 위험 경계
+         * Android vitals - 기준 위험 경계
          * 1. cold start : 5s 이상
          * 2. hot start : 1.5s 이상
          */

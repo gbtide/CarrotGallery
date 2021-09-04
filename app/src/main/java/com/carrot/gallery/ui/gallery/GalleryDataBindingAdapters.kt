@@ -16,9 +16,6 @@ import com.facebook.shimmer.ShimmerFrameLayout
 
 /**
  * Created by kyunghoon on 2021-08-28
- *
- * 고민. 특정 화면의 처리를 담고 있는 로직을 @BindingAdapter 로 처리하는 것이 바람직한지 고민입니다. (처리 방식 비교 - [ImageViewerSimpleImageItemBinder])
- *
  */
 @BindingAdapter(value = ["galleryImageUrl", "galleryColumnCount", "galleryThumbnailUrlMaker", "galleryShimmerView"], requireAll = true)
 fun loadGalleryImageAtGrid(
