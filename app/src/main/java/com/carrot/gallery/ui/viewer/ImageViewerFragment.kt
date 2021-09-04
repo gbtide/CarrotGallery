@@ -55,8 +55,6 @@ class ImageViewerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.d("### ImageViewerFragment : " + this)
-
         binding = FragmentImageViewerBinding.inflate(inflater, container, false)
             .apply {
                 lifecycleOwner = viewLifecycleOwner
@@ -99,9 +97,8 @@ class ImageViewerFragment : Fragment() {
 
     private fun initViewModel() {
         sharedViewModel.galleryImagesFromGallery.observeOnce(viewLifecycleOwner, { images ->
-            images?.let {
-                viewModel.onReceiveImagesFromGallery(it)
-            }
+            Timber.d("### Viewer : %s", images)
+            viewModel.onReceiveImagesFromGallery(images)
         })
 
         viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->

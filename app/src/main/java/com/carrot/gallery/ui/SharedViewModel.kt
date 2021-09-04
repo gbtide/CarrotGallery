@@ -1,9 +1,10 @@
 package com.carrot.gallery.ui
 
-import android.util.ArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.carrot.gallery.core.event.Data
+import com.carrot.gallery.core.event.OneTimeReturnableLiveDataContainer
 import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -13,79 +14,30 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class SharedViewModel @Inject constructor(
-) : ViewModel() {
+    oneTimeReturnableLiveDataContainer: OneTimeReturnableLiveDataContainer
+) : ViewModel(), OneTimeReturnableLiveDataContainer by oneTimeReturnableLiveDataContainer {
 
     companion object {
-        const val START_VERSION = 0
         const val KEY_GALLERY_IMAGES_FROM_GALLERY = "KEY_GALLERY_IMAGES_FROM_GALLERY"
         const val KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER = "KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER"
     }
 
-    private val dataVersions = ArrayMap<String, Int>()
-
-    private val _galleryImages = MutableLiveData<Data<List<Image>>>()
-
-    /**
-     * 1회성 notify 합니다. (configuration chanage 등에 대응할 수 있습니다.)
-     * TODO : 네이밍을 SingleUseLiveData 등으로 해서 모듈화 가능할 것 같습니다.
-     */
+    private val _galleryImagesFromGallery = MutableLiveData<Data<List<Image>>>()
     val galleryImagesFromGallery: LiveData<List<Image>>
-        get() = getGalleryImagesIfExist()
+        get() = getOneTimeReturnableLiveData(_galleryImagesFromGallery, KEY_GALLERY_IMAGES_FROM_GALLERY)
 
     private val _selectedPageFromImageViewer = MutableLiveData<Data<Int>>()
-
-    /**
-     * 1회성 notify 합니다.
-     */
     val selectedPageFromImageViewer: LiveData<Int>
-        get() = getSelectedPageFromImageViewerIfExist()
+        get() = getOneTimeReturnableLiveData(_selectedPageFromImageViewer, KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER)
 
 
-
-    fun onUpdateImagesAtGallery(list : List<Image>) {
-        _galleryImages.value = Data(list, getVersion(KEY_GALLERY_IMAGES_FROM_GALLERY) + 1)
+    fun onUpdateImagesAtGallery(list: List<Image>) {
+        _galleryImagesFromGallery.value = createDataForOneTimeReturnableLiveData(list, KEY_GALLERY_IMAGES_FROM_GALLERY)
     }
 
     fun onPageSelectedAtImageViewer(page: Int) {
-        _selectedPageFromImageViewer.value = Data(page, getVersion(KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER) + 1)
-    }
-
-    private fun getGalleryImagesIfExist(): LiveData<List<Image>> {
-        _galleryImages.value?.let { images ->
-            if (images.version > getVersion(KEY_GALLERY_IMAGES_FROM_GALLERY)) {
-                dataVersions[KEY_GALLERY_IMAGES_FROM_GALLERY] = images.version
-                val data = MutableLiveData<List<Image>>()
-                data.value = images.data
-                return data
-            }
-        }
-
-        // return dummy
-        return MutableLiveData()
-    }
-
-    private fun getSelectedPageFromImageViewerIfExist(): LiveData<Int> {
-        _selectedPageFromImageViewer.value?.let { selectedPageData ->
-            if (selectedPageData.version > getVersion(KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER)) {
-                dataVersions[KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER] = selectedPageData.version
-                val data = MutableLiveData<Int>()
-                data.value = selectedPageData.data
-                return data
-            }
-        }
-
-        // return dummy
-        return MutableLiveData()
-    }
-
-    private fun getVersion(key: String): Int {
-        dataVersions[key]?.let {
-            return it
-        }
-        dataVersions[key] = START_VERSION
-        return START_VERSION
+        _selectedPageFromImageViewer.value = createDataForOneTimeReturnableLiveData(page, KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER)
     }
 
 }
 
-data class Data<T>(val data: T, val version: Int)

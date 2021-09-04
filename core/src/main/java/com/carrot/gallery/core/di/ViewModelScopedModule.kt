@@ -1,5 +1,7 @@
 package com.carrot.gallery.core.di
 
+import com.carrot.gallery.core.event.OneTimeReturnableLiveDataContainer
+import com.carrot.gallery.core.event.OneTimeReturnableLiveDataContainerImple
 import com.carrot.gallery.core.event.ViewModelSingleEventsDelegate
 import com.carrot.gallery.core.event.ViewModelSingleLiveEventsDelegate
 import dagger.Module
@@ -18,5 +20,9 @@ class ViewModelScopedModule {
     @ViewModelScoped
     @Provides
     fun provideViewModelSingleEventsDelegate(): ViewModelSingleEventsDelegate = ViewModelSingleLiveEventsDelegate()
+
+    @ViewModelScoped
+    @Provides
+    fun provideOneTimeReturnableLiveDataContainer(): OneTimeReturnableLiveDataContainer = OneTimeReturnableLiveDataContainerImple()
 
 }

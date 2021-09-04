@@ -21,6 +21,7 @@ import com.carrot.gallery.util.observeOnce
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -105,10 +106,9 @@ class GalleryFragment : Fragment() {
         binding.viewModel = viewModel
 
         sharedViewModel.selectedPageFromImageViewer.observeOnce(viewLifecycleOwner, { position ->
-            position?.let {
-                (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
-                    ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2 / 5f).toInt())
-            }
+            Timber.d("### Gallery : %s", position)
+            (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
+                ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2 / 5f).toInt())
         })
     }
 
