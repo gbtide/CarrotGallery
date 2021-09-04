@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.carrot.gallery.R
 import com.carrot.gallery.core.image.ImageUrlMaker
-import com.carrot.gallery.data.GalleryImageItemViewData
 import com.carrot.gallery.databinding.ItemGallerySimpleImageBinding
 import com.carrot.gallery.ui.BaseItemBinder
 

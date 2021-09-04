@@ -10,8 +10,6 @@ import com.bumptech.glide.module.AppGlideModule
 /**
  * Created by kyunghoon on 2021-08-31
  *
- * memo.
- * core 보다는 각 feature 에서 정의하는 것이 좋을 것 같아 feautre (ui)모듈 레벨에 정의했습니다.
  */
 @GlideModule
 class GalleryGlideModule : AppGlideModule() {

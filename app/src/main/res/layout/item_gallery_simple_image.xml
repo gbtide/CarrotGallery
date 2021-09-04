@@ -12,7 +12,7 @@
 
         <variable
             name="image"
-            type="com.carrot.gallery.data.GalleryImageItemViewData.SimpleImage" />
+            type="com.carrot.gallery.ui.gallery.GalleryImageItemViewData.SimpleImage" />
 
         <variable
             name="galleryColumnCount"

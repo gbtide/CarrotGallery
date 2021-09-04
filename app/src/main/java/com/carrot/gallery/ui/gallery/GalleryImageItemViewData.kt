@@ -1,4 +1,4 @@
-package com.carrot.gallery.data
+package com.carrot.gallery.ui.gallery
 
 import com.carrot.gallery.core.util.CollectionUtils
 import com.carrot.gallery.model.domain.Image

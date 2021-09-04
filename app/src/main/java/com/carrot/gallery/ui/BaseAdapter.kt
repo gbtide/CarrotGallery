@@ -11,17 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 typealias ItemClass = Class<out Any>
 
 /**
- * {@link BaseItemBinder} 주석 참고
+ * [BaseItemBinder] 주석 참고
  */
 typealias ItemBinder = BaseItemBinder<Any, RecyclerView.ViewHolder>
 
 /**
  * kyunghoon on 2021-08
+ *
  * - Google I/O 프로젝트의 FeedAdapter 를 참고해서 일부 네이밍 + 주석만 변경하여 작성했습니다.
  */
 class BaseAdapter(
     /**
-     * 데이터 타입 -> {@link ItemBinder}
+     * 데이터 타입 -> [ItemBinder]
      */
     private val viewBinders: Map<ItemClass, ItemBinder>
 
@@ -38,7 +39,7 @@ class BaseAdapter(
      * submit 된 데이터의 타입이 분류되는 위치입니다.
      * 타입 검색을 HashMap 으로 하기 때문에 검색 시간 복잡도는 O(1)
      *
-     * @return {@link BaseItemBinder#getItemType} 참고
+     * @return [BaseItemBinder.getItemType] 참고
      */
     override fun getItemViewType(position: Int): Int = viewBinders.getValue(super.getItem(position).javaClass).getItemType()
 

@@ -11,8 +11,6 @@ import com.carrot.gallery.core.result.successOr
 import com.carrot.gallery.core.util.CollectionUtils
 import com.carrot.gallery.core.util.notifyObserver
 import com.carrot.gallery.core.util.observeByDebounce
-import com.carrot.gallery.data.GalleryImageItemViewData
-import com.carrot.gallery.data.GalleryImageItemViewDataMapper
 import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -21,7 +19,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 /**

@@ -1,7 +1,6 @@
 package com.carrot.gallery.ui.gallery
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.carrot.gallery.SharedViewModel
 import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.core.util.ScreenUtility
-import com.carrot.gallery.data.GalleryImageItemViewData
 import com.carrot.gallery.databinding.FragmentGalleryBinding
 import com.carrot.gallery.ui.BaseAdapter
 import com.carrot.gallery.ui.ItemBinder
@@ -24,7 +22,6 @@ import com.carrot.gallery.util.observeOnce
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -111,7 +108,7 @@ class GalleryFragment : Fragment() {
         sharedViewModel.selectedPageFromImageViewer.observeOnce(viewLifecycleOwner, { position ->
             position?.let {
                 (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
-                    ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2/5f).toInt())
+                    ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2 / 5f).toInt())
             }
         })
     }
