@@ -55,18 +55,18 @@ class SimpleImageViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(simpleImage: ImageViewerViewData, position: Int) {
-        // Timber.d("### position : " + position + " " + this@SimpleImageViewHolder)
-        // 테스트해보니 5개의 뷰홀더로 가지고 리사이클링하며, 페이지는 4개만 유지하는 상황이다.
-        // notifyDataChanged 를 콜하니 현재 페이지만 리로딩 되나,
-        // 나머지 뷰들이 모두 초기화된다.(페이지 넘기면 재로딩)
-        // 예 : 3 (4) 5 6 에서 notifyDataChange 를 거니
-        // (4) 만 재로딩되나, 우로 페이징하면 5,6도 다시 불러온다
-        // 페이징 시 목적지 페이지 기준 좌우 1page 는 미리 생성(or 유지)하고 있다.
-        // notifyItemChanged(특정페이지) 로 교체함
+        /**
+         * [ ViewPager2 기본 스펙 테스트 ]
+         *
+         * - 최대 5개의 뷰홀더를 생성하며, 4개의 페이지를 유지한다.
+         * - notifyDataChanged 를 콜하니 보여지는 페이지만 Re-Binding 이 되나, 페이지 넘기면 나머지 페이지도 모두 Re-Binding 된다.
+         * - 예 : 3 (4) 5 6 에서 notifyDataChange 를 거니 (4) 만 Re-Binding 되나, 우로 페이징하면 5,6도 다시 Re-Binding 된다.
+         * - 페이징 시 목적지 페이지 기준 좌우 1page 는 미리 생성(or 유지)하고 있다.
+         * - 결국 현재 페이지만 Re-load 하고 싶으면 ObserverField 를 쓰거나, notifyItemChanged(page) 를 쓰도록 하자.
+         */
 
         prepareImageLoad()
 
-        // memo. blink 이슈로 .into(binding.imageViewerView) 를 쓰지 않았습니다.
         Glide.with(binding.imageViewerView.context)
             .asBitmap()
             .load(getCompletedUrl(simpleImage))
@@ -86,6 +86,7 @@ class SimpleImageViewHolder(
                     return false
                 }
             })
+            // memo. blink 이슈로 .into(binding.imageViewerView) 를 쓰지 않았습니다.
             .into(object : CustomTarget<Bitmap>() {
                 override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
                     binding.imageViewerView.setImageBitmap(bitmap)

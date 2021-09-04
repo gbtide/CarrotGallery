@@ -44,7 +44,6 @@ class ImageViewerFragment : Fragment() {
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
     private var imageViewerAdapter: BaseAdapter? = null
-    private var imageViewBinder: ImageViewerSimpleImageItemBinder? = null
 
     @Inject
     lateinit var imageUrlMaker: ImageUrlMaker
@@ -131,7 +130,7 @@ class ImageViewerFragment : Fragment() {
     private fun addToViewPager(viewPager: ViewPager2, list: List<ImageViewerViewData>?) {
         if (imageViewerAdapter == null) {
             val viewBinders = HashMap<ItemClass, ItemBinder>()
-            imageViewBinder = ImageViewerSimpleImageItemBinder(viewModel, imageUrlMaker)
+            val imageViewBinder = ImageViewerSimpleImageItemBinder(viewModel, imageUrlMaker)
             viewBinders[imageViewBinder!!.modelClass] = imageViewBinder as ItemBinder
             imageViewerAdapter = BaseAdapter(viewBinders)
         }

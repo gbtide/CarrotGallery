@@ -24,6 +24,7 @@ import com.carrot.gallery.util.observeOnce
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -37,7 +38,6 @@ class GalleryFragment : Fragment() {
     @Inject
     lateinit var imageUrlMaker: ImageUrlMaker
 
-    private var layoutManagerState: Parcelable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,10 +77,6 @@ class GalleryFragment : Fragment() {
                 }
             })
         }
-
-        layoutManagerState?.let {
-            binding.galleryRecyclerview.layoutManager?.onRestoreInstanceState(layoutManagerState)
-        }
     }
 
     private fun initViewModel() {
@@ -112,7 +108,7 @@ class GalleryFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        sharedViewModel.recentlySelectedPageFromImageViewer.observeOnce(viewLifecycleOwner, { position ->
+        sharedViewModel.selectedPageFromImageViewer.observeOnce(viewLifecycleOwner, { position ->
             position?.let {
                 (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
                     ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2/5f).toInt())
@@ -124,20 +120,21 @@ class GalleryFragment : Fragment() {
     private fun addToGallery(recyclerView: RecyclerView, list: List<GalleryImageItemViewData>?) {
         (recyclerView.adapter as BaseAdapter).submitList(list?.toImmutableList() ?: emptyList())
 
-        // 체크!
-        // After submitting the list to the adapter, the recycler view starts measuring and drawing
-        // so let's wait for the layout to be drawn before reporting fully drawn.
+        /**
+         * [ 2021.09.04 테스트 결과 (Galaxy S9) ]
+         * RecyclerView 가 submit 이후 레이아웃 최종 그릴 때까지
+         * 1. cold start : 1.9s ~ 2.1s
+         * 2. hot start : 500ms ~ 600ms
+         *
+         * [ 참고 ]
+         * Android vitals 기준 위험 경계
+         * 1. cold start : 5s 이상
+         * 2. hot start : 1.5s 이상
+         */
         recyclerView.doOnLayout {
-            // reportFullyDrawn() prints `I/ActivityTaskManager: Fully drawn {activity} {time}`
-            // to logcat. The framework ensures that the statement is printed only once for the
-            // activity, so there is no need to add dedupping logic to the app.
             activity?.reportFullyDrawn()
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        layoutManagerState = binding.galleryRecyclerview.layoutManager?.onSaveInstanceState()
-    }
 
 }

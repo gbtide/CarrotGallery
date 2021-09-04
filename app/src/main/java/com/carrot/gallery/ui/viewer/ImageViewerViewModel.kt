@@ -142,9 +142,6 @@ class ImageViewerViewModel @Inject constructor(
 
 }
 
-/**
- * ViewPager2 Item(RecyclerView Item) 으로 정의된 개별 이미지 화면의 뷰 이벤트
- */
 interface ImageViewerSinglePageListener {
     fun onSingleTabImage()
     fun onClickReloadImageAtErrorView()
