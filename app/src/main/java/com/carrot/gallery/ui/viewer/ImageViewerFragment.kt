@@ -126,9 +126,9 @@ class ImageViewerFragment : Fragment() {
         viewPager.setCurrentItem(args.position, false)
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun addToViewPager(viewPager: ViewPager2, list: List<ImageViewerViewData>?) {
         if (imageViewerAdapter == null) {
+            @Suppress("UNCHECKED_CAST")
             val viewBinders = HashMap<ItemClass, ItemBinder>()
             val imageViewBinder = ImageViewerSimpleImageItemBinder(viewModel, imageUrlMaker)
             viewBinders[imageViewBinder!!.modelClass] = imageViewBinder as ItemBinder

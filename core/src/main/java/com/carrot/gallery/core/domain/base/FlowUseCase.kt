@@ -28,10 +28,10 @@ abstract class FlowUseCase<in P, R>(private val coroutineDispatcher: CoroutineDi
      *  3.
      *  flow {} 내부는 suspend 가능
      */
-    operator fun invoke(parameters: P): Flow<Result<R>> = execute(parameters)
+    operator fun invoke(parameter: P): Flow<Result<R>> = execute(parameter)
         .catch { e -> emit(Result.Error(Exception(e))) }
         .flowOn(coroutineDispatcher)
 
-    protected abstract fun execute(parameters: P): Flow<Result<R>>
+    protected abstract fun execute(parameter: P): Flow<Result<R>>
 
 }

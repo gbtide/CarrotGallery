@@ -60,8 +60,8 @@ class GalleryFragment : Fragment() {
     }
 
     private fun initView() {
+        @Suppress("UNCHECKED_CAST")
         val viewBinders = HashMap<ItemClass, ItemBinder>()
-
         val imageViewBinder = GallerySimpleImageItemBinder(viewModel, imageUrlMaker)
         viewBinders[imageViewBinder.modelClass] = imageViewBinder as ItemBinder
         galleryAdapter = BaseAdapter(viewBinders)
