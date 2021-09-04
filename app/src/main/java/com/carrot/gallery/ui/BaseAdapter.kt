@@ -1,28 +1,47 @@
-package com.carrot.gallery.ui.gallery
+package com.carrot.gallery.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-typealias GalleryItemClass = Class<out Any>
-
-typealias GalleryItemBinder = GalleryItemViewBinder<Any, RecyclerView.ViewHolder>
+/**
+ * 'submit 된 리스트' 의 각각의 아이템(데이터) 타입
+ */
+typealias ItemClass = Class<out Any>
 
 /**
- * Created by kyunghoon on 2021-08
+ * [BaseItemBinder] 주석 참고
  */
-class GalleryAdapter(
-    private val viewBinders: Map<GalleryItemClass, GalleryItemBinder>
-) : ListAdapter<Any, RecyclerView.ViewHolder>(GalleryItemDiffCallback(viewBinders)) {
+typealias ItemBinder = BaseItemBinder<Any, RecyclerView.ViewHolder>
 
-    private val viewTypeToBinders = viewBinders.mapKeys { it.value.getItemType() }
+/**
+ * kyunghoon on 2021-08
+ *
+ * - Google I/O 프로젝트의 FeedAdapter 를 참고해서 일부 네이밍 + 주석만 변경하여 작성했습니다.
+ */
+class BaseAdapter(
+    /**
+     * 데이터 타입 -> [ItemBinder]
+     */
+    private val viewBinders: Map<ItemClass, ItemBinder>
 
-    private fun getViewBinder(viewType: Int): GalleryItemBinder =
-        viewTypeToBinders.getValue(viewType)
+) : ListAdapter<Any, RecyclerView.ViewHolder>(ItemDiffCallback(viewBinders)) {
 
-    override fun getItemViewType(position: Int): Int =
-        viewBinders.getValue(super.getItem(position).javaClass).getItemType()
+    /**
+     * 뷰타입(view holder's layout resource id) -> 바인더
+     */
+    private val viewTypeToBinders: Map<Int, ItemBinder> = viewBinders.mapKeys { it.value.getItemType() }
+
+    private fun getViewBinder(viewType: Int): ItemBinder = viewTypeToBinders.getValue(viewType)
+
+    /**
+     * submit 된 데이터의 타입이 분류되는 위치입니다.
+     * 타입 검색을 HashMap 으로 하기 때문에 검색 시간 복잡도는 O(1)
+     *
+     * @return [BaseItemBinder.getItemType] 참고
+     */
+    override fun getItemViewType(position: Int): Int = viewBinders.getValue(super.getItem(position).javaClass).getItemType()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return getViewBinder(viewType).createViewHolder(parent)
@@ -44,21 +63,31 @@ class GalleryAdapter(
 
 }
 
-abstract class GalleryItemViewBinder<M, VH : RecyclerView.ViewHolder>(
+/**
+ * 실제 ViewHolder 정의 및 생성 방식, Bind 될 데이터 타입과 바인딩 방식 등이 정의됩니다.
+ */
+abstract class BaseItemBinder<M, VH : RecyclerView.ViewHolder>(
+    /**
+     * View Holder 에 바인드 될 데이터(리스트 아이템) 타입
+     */
     val modelClass: Class<out M>
+
 ) : DiffUtil.ItemCallback<M>() {
 
     abstract fun createViewHolder(parent: ViewGroup): RecyclerView.ViewHolder
     abstract fun bindViewHolder(model: M, viewHolder: VH)
+
+    /**
+     * 보통 inflate 할 뷰의 layout resource id 를 넣으시면 됩니다.
+     */
     abstract fun getItemType(): Int
 
-    // 필요하면 아래 메소드들 사용한다.
     open fun onViewRecycled(viewHolder: VH) = Unit
     open fun onViewDetachedFromWindow(viewHolder: VH) = Unit
 }
 
-internal class GalleryItemDiffCallback(
-    private val viewBinders: Map<GalleryItemClass, GalleryItemBinder>
+internal class ItemDiffCallback(
+    private val viewBinders: Map<ItemClass, ItemBinder>
 ) : DiffUtil.ItemCallback<Any>() {
 
     override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean {
@@ -68,8 +97,6 @@ internal class GalleryItemDiffCallback(
         return viewBinders[oldItem::class.java]?.areItemsTheSame(oldItem, newItem) ?: false
     }
 
-    // memo. areItemsTheSame true 리턴 후 콜 됨
-    // 공식 주석 : This method is called only if areItemsTheSame(int, int) returns true for these items.
     override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean {
         return viewBinders[oldItem::class.java]?.areContentsTheSame(oldItem, newItem) ?: false
     }

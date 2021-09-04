@@ -1,29 +1,31 @@
 package com.carrot.gallery.ui.viewer
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.Transition
+import androidx.navigation.fragment.navArgs
+import androidx.viewpager2.widget.ViewPager2
+import com.carrot.gallery.SharedViewModel
 import com.carrot.gallery.core.domain.ImageCons
+import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
+import com.carrot.gallery.ui.BaseAdapter
+import com.carrot.gallery.ui.ItemBinder
+import com.carrot.gallery.ui.ItemClass
+import com.carrot.gallery.util.observeOnce
 import dagger.hilt.android.AndroidEntryPoint
-
+import okhttp3.internal.toImmutableList
+import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by kyunghoon on 2021-01
@@ -32,25 +34,28 @@ import dagger.hilt.android.AndroidEntryPoint
 class ImageViewerFragment : Fragment() {
 
     companion object {
-        const val IMAGE_ID = "imageId"
+        // [ config change 대응 ]
+        // 고민 : ARG_KEY_POSITION 를 안쓰고 nav_graph.xml 의 android:name 을 쓰고 싶었으나,
+        // @string 으로는 해결이 안되는 것 같습니다. 고민 고민..
+        const val ARG_KEY_POSITION = "position"
     }
 
-    private var imageId: Long = -1L
+    private val args : ImageViewerFragmentArgs by navArgs()
+
     private lateinit var binding: FragmentImageViewerBinding
     private val viewModel: ImageViewerViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            imageId = it.getSerializable(IMAGE_ID) as Long
-        }
-    }
+    private var imageViewerAdapter: BaseAdapter? = null
+
+    @Inject
+    lateinit var imageUrlMaker: ImageUrlMaker
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         binding = FragmentImageViewerBinding.inflate(inflater, container, false)
             .apply {
                 lifecycleOwner = viewLifecycleOwner
@@ -63,63 +68,42 @@ class ImageViewerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initViewModel()
-        viewModel.onViewCreated(imageId)
     }
 
     private fun initView() {
-        binding.imageViewerView.setOnPhotoTapListener { _, _, _ -> viewModel.onSingleTabImageEvent() }
-
-        binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener { _, isChecked -> viewModel.onChangeGrayscaleEffect(isChecked) }
+        binding.imageViewerViewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                viewModel.onPageSelected(position)
+                sharedViewModel.onPageSelectedAtImageViewer(position)
+            }
+        })
+        binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onChangeGrayscaleEffect(isChecked)
+        }
 
         binding.bottomBarBlurSeekbar.max = ImageCons.BLUR_FILTER_MAX_VALUE
         binding.bottomBarBlurSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.onChangeBlurEffect(progress)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                viewModel.onChangeBlurEffect(binding.bottomBarBlurSeekbar.progress)
             }
         })
 
     }
 
     private fun initViewModel() {
-        viewModel.image.observe(viewLifecycleOwner, { image ->
-            binding.image = image
-            binding.executePendingBindings()
+        sharedViewModel.galleryImages.observeOnce(viewLifecycleOwner, { images ->
+            viewModel.onInitImages(images)
         })
 
-        viewModel.imageUrl.observe(viewLifecycleOwner) { url ->
-            viewModel.onStartLoadImageToView()
-
-            // memo. blink 이슈로 .into(binding.imageViewerView) 를 쓰지 않았습니다.
-            Glide.with(binding.imageViewerView.context)
-                .asBitmap()
-                .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .listener(object : RequestListener<Bitmap> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                        viewModel.onFailureLoadImageToView(e ?: GlideException("Unknown Glide Exception"))
-                        return true
-                    }
-
-                    override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        return false
-                    }
-                })
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
-                        viewModel.onSuccessLoadImageToView()
-                        binding.imageViewerView.setImageBitmap(bitmap)
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                    }
-                })
-        }
+        viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->
+            initViewPager(binding.imageViewerViewPager, images)
+        })
 
         viewModel.observeSingleEvent(viewLifecycleOwner) {
             when (it) {
@@ -127,9 +111,12 @@ class ImageViewerFragment : Fragment() {
                     findNavController().popBackStack()
                 }
                 is ImageViewerSingleEventType.ClickMoreButton -> {
-                    // TODO custom tab 변경
+                    // TODO 시간되면 custom tab 으로 변경
                     // https://developer.chrome.com/docs/android/custom-tabs/integration-guide/
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
+                }
+                is ImageViewerSingleEventType.ReloadImage -> {
+                    binding.imageViewerViewPager.adapter?.notifyItemChanged(it.page)
                 }
             }
         }
@@ -137,5 +124,32 @@ class ImageViewerFragment : Fragment() {
         binding.viewModel = viewModel
     }
 
+    private fun initViewPager(viewPager: ViewPager2, list: List<ImageViewerViewData>?) {
+        addToViewPager(viewPager, list)
+        viewPager.setCurrentItem(args.position, false)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun addToViewPager(viewPager: ViewPager2, list: List<ImageViewerViewData>?) {
+        if (imageViewerAdapter == null) {
+            val viewBinders = HashMap<ItemClass, ItemBinder>()
+            val imageViewBinder = ImageViewerSimpleImageItemBinder(viewModel, imageUrlMaker)
+            viewBinders[imageViewBinder.modelClass] = imageViewBinder as ItemBinder
+            imageViewerAdapter = BaseAdapter(viewBinders)
+        }
+        if (viewPager.adapter == null) {
+            viewPager.apply {
+                adapter = imageViewerAdapter
+            }
+        }
+        (viewPager.adapter as BaseAdapter).submitList(list?.toImmutableList() ?: emptyList())
+    }
+
+    override fun onStop() {
+        super.onStop()
+        arguments?.let {
+            it.putInt(ARG_KEY_POSITION, binding.imageViewerViewPager.currentItem)
+        }
+    }
 
 }

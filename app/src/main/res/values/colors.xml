@@ -20,6 +20,7 @@
     <color name="white_opacity_40">#66ffffff</color>
     <color name="white_opacity_50">#80ffffff</color>
     <color name="white_opacity_60">#99ffffff</color>
+    <color name="white_opacity_80">#ccffffff</color>
 
     <!-- 스와이프 동글뱅이 -->
     <integer-array name="swipe_refresh">
@@ -36,6 +37,6 @@
     <!-- dark mode -->
     <color name="tc01">@color/black</color>
     <color name="bt06">@color/black_opacity_40</color>
-    <color name="bg06">@color/white_opacity_40</color>
+    <color name="bg06">@color/white_opacity_80</color>
 
 </resources>

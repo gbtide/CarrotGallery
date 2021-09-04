@@ -1,6 +1,5 @@
 package com.carrot.gallery.ui.gallery
 
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
@@ -12,13 +11,12 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.carrot.gallery.core.image.ImageUrlMaker
-import com.facebook.shimmer.Shimmer
+import com.carrot.gallery.ui.CustomShimmer
 import com.facebook.shimmer.ShimmerFrameLayout
 
 /**
  * Created by kyunghoon on 2021-08-28
  */
-
 @BindingAdapter(value = ["galleryImageUrl", "galleryColumnCount", "galleryThumbnailUrlMaker", "galleryShimmerView"], requireAll = true)
 fun loadGalleryImageAtGrid(
     imageView: ImageView,
@@ -31,7 +29,7 @@ fun loadGalleryImageAtGrid(
         galleryImageUrl,
         galleryColumnCount
     )
-    galleryShimmerView.setShimmer(GalleryCustomShimmer.customShimmer)
+    galleryShimmerView.setShimmer(CustomShimmer.galleryCustomShimmer)
     galleryShimmerView.startShimmer()
 
     Glide.with(imageView.context)

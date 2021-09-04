@@ -18,10 +18,10 @@ class GetImagesUseCase @Inject constructor(
     @IoDispatcher dispatcher: CoroutineDispatcher
 ) : FlowUseCase<GetImagesParameter, List<Image>>(dispatcher) {
 
-    override fun execute(param: GetImagesParameter): Flow<Result<List<Image>>> = flow {
+    override fun execute(parameter: GetImagesParameter): Flow<Result<List<Image>>> = flow {
         try {
             emit(Result.Loading)
-            emit(Result.Success(imageRepository.getImages(param.page, param.limit)))
+            emit(Result.Success(imageRepository.getImages(parameter.page, parameter.limit)))
         } catch (e: Exception) {
             emit(Result.Error(e))
         }

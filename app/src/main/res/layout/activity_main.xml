@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.carrot.gallery.MainViewModel" />
+            type="com.carrot.gallery.SharedViewModel" />
 
     </data>
 

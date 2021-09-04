@@ -8,6 +8,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.carrot.gallery.widget.CustomSwipeRefreshLayout
+import com.github.chrisbanes.photoview.OnPhotoTapListener
+import com.github.chrisbanes.photoview.PhotoView
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by kyunghoon on 2021-08
@@ -35,7 +41,7 @@ fun setGlideImage(imageView: ImageView, glideImage: String?, glideCenterInside: 
         .into(imageView)
 }
 
-@BindingAdapter(value = ["formatSeconds"])
-fun secondsToDateText(textView: TextView, formatSeconds: Long) {
-    textView.text = TimeUtils.parseToHHmmss(formatSeconds)
+@BindingAdapter("photoTabListener")
+fun setOnPhotoTabListener(photoView: PhotoView, photoTabListener: OnPhotoTapListener) {
+    photoView.setOnPhotoTapListener(photoTabListener)
 }

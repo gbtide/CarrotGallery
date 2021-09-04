@@ -1,6 +1,5 @@
-package com.carrot.gallery.core.apis
+package com.carrot.gallery.core
 
-import com.carrot.gallery.core.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -13,25 +12,28 @@ import java.nio.charset.StandardCharsets
  */
 class OkHttpInterceptor : Interceptor {
 
-    /**
-     * Cookie 생략
-     */
-    private val REQUEST_HEADER_LIST_TO_BE_SHOWN = arrayOf("User-Agent", "UserId", "Content-Type")
+    companion object {
+        /**
+         * Cookie 생략
+         */
+        val REQUEST_HEADER_LIST_TO_BE_SHOWN = arrayOf("User-Agent", "UserId", "Content-Type")
 
-    /**
-     * p3p, set-cookie, access-control*, cache-control, pragma, expires, x-xss-protection, x-frame-options 등은 생략
-     */
-    private val RESPONSE_HEADER_LIST_TO_BE_SHOWN = arrayOf("server", "date", "content-type")
-
+        /**
+         * p3p, set-cookie, access-control*, cache-control, pragma, expires, x-xss-protection, x-frame-options 등은 생략
+         */
+        val RESPONSE_HEADER_LIST_TO_BE_SHOWN = arrayOf("server", "date", "content-type")
+    }
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val builder = StringBuilder()
-        log(builder, request)
-        val response = chain.proceed(request)
-        log(builder, response)
-
         if (BuildConfig.DEBUG) {
+            log(builder, request)
+        }
+
+        val response = chain.proceed(request)
+        if (BuildConfig.DEBUG) {
+            log(builder, response)
             Timber.d(builder.toString())
         }
         return response
@@ -88,14 +90,12 @@ class OkHttpInterceptor : Interceptor {
         while (i < len) {
             val name = responseHeaders.name(i)
             val value = responseHeaders.value(i)
-            if (name != null) {
-                for (headerKey in RESPONSE_HEADER_LIST_TO_BE_SHOWN) {
-                    if (headerKey == name) {
-                        builder.append("\n   - ")
-                        builder.append(name)
-                        builder.append(" : ")
-                        builder.append(value)
-                    }
+            for (headerKey in RESPONSE_HEADER_LIST_TO_BE_SHOWN) {
+                if (headerKey == name) {
+                    builder.append("\n   - ")
+                    builder.append(name)
+                    builder.append(" : ")
+                    builder.append(value)
                 }
             }
             i++
@@ -120,9 +120,8 @@ class OkHttpInterceptor : Interceptor {
         val responseBody = rawResponse.body
         val source = responseBody!!.source()
         source.request(Long.MAX_VALUE) // request the entire body.
-        val buffer = source.buffer()
-        val responseBodyString = buffer.clone().readString(StandardCharsets.UTF_8)
-        return responseBodyString ?: ""
+        val buffer = source.buffer
+        return buffer.clone().readString(StandardCharsets.UTF_8)
     }
 
     @Throws(Exception::class)
