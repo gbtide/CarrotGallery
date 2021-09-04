@@ -1,24 +1,12 @@
 package com.carrot.gallery.ui.viewer
 
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.Transition
 import com.carrot.gallery.R
 import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.databinding.ItemImageViewerSimpleImageBinding
 import com.carrot.gallery.ui.BaseItemBinder
-import com.carrot.gallery.ui.CustomShimmer
 
 /**
  * Created by kyunghoon on 2021-08-28

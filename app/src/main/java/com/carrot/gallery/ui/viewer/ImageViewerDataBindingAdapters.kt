@@ -24,7 +24,7 @@ import com.github.chrisbanes.photoview.PhotoView
  *
  */
 @BindingAdapter(value = ["imageViewerViewData", "imageViewerThumbnailUrlMaker", "imageViewerShimmerView", "imageViewerErrorView"], requireAll = true)
-fun loadImageToImageViewer (
+fun loadImageToImageViewer(
     photoView: PhotoView,
     imageViewerViewData: ImageViewerViewData,
     imageViewerImageUrlMaker: ImageUrlMaker,
