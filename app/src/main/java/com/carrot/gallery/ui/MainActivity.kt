@@ -1,9 +1,10 @@
-package com.carrot.gallery
+package com.carrot.gallery.ui
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.carrot.gallery.R
 import com.carrot.gallery.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
