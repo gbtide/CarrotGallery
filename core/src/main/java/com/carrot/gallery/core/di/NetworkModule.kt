@@ -1,7 +1,7 @@
 package com.carrot.gallery.core.di
 
 import com.carrot.gallery.core.data.ImageApis
-import com.carrot.gallery.core.data.OkHttpInterceptor
+import com.carrot.gallery.core.OkHttpInterceptor
 import com.carrot.gallery.core.data.ImageDataSource
 import com.carrot.gallery.core.data.ImageRepository
 import com.carrot.gallery.core.data.LoremPicksumImageDataSource
