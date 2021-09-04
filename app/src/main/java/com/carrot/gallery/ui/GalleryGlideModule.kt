@@ -1,4 +1,4 @@
-package com.carrot.gallery
+package com.carrot.gallery.ui
 
 import android.content.Context
 import com.bumptech.glide.GlideBuilder

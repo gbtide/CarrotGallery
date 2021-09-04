@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.carrot.gallery.SharedViewModel
+import com.carrot.gallery.ui.SharedViewModel
 import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.core.util.ScreenUtility
 import com.carrot.gallery.databinding.FragmentGalleryBinding
@@ -22,6 +21,7 @@ import com.carrot.gallery.util.observeOnce
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -106,14 +106,11 @@ class GalleryFragment : Fragment() {
         binding.viewModel = viewModel
 
         sharedViewModel.selectedPageFromImageViewer.observeOnce(viewLifecycleOwner, { position ->
-            position?.let {
-                (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
-                    ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2 / 5f).toInt())
-            }
+            (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
+                ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2 / 5f).toInt())
         })
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun addToGallery(recyclerView: RecyclerView, list: List<GalleryImageItemViewData>?) {
         (recyclerView.adapter as BaseAdapter).submitList(list?.toImmutableList() ?: emptyList())
 
@@ -128,9 +125,9 @@ class GalleryFragment : Fragment() {
          * 1. cold start : 5s 이상
          * 2. hot start : 1.5s 이상
          */
-        recyclerView.doOnLayout {
-            activity?.reportFullyDrawn()
-        }
+//        recyclerView.doOnLayout {
+//            activity?.reportFullyDrawn()
+//        }
     }
 
 
