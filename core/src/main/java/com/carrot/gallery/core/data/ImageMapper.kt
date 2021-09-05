@@ -1,9 +1,9 @@
 package com.carrot.gallery.core.data
 
 import com.carrot.gallery.core.util.CollectionUtils
+import com.carrot.gallery.core.util.toImmutableList
 import com.carrot.gallery.model.domain.Image
 import com.carrot.gallery.model.response.ImageResponse
-import okhttp3.internal.toImmutableList
 
 /**
  * Created by kyunghoon on 2021-08-29

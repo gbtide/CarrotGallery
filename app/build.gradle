@@ -54,11 +54,6 @@ dependencies {
     implementation(project(':core'))
 
     // ktx
-    // memo. 왜 구글 오픈소스에서는 core 모듈 ktx 를 api 로 안하고 implementation 으로 했을까
-    // 김경훈 생각 : core 모듈보다 app(ui 연관) 모듈에 더 필요한 ktx 부가 라이브러리 들이 있는데
-    // 중복되는 디펜던시만 빼서 core 에 api 를 걸어서 관리하면
-    // 양쪽 모듈 gradle 을 모두봐야 ktx 라이브러리 스펙이 온전히 관리되는 이슈가 있을 것 같다.
-    // 어차피 버저닝 관리 잘 되고 있으니, 관리상 양쪽 모두에 implementation 으로 관리하는 것 같다.
     implementation "androidx.core:core-ktx:${project.core_ktx}"
     implementation "androidx.activity:activity-ktx:${project.activity_ktx}"
     implementation "androidx.fragment:fragment-ktx:${project.fragment_ktx}"
@@ -76,7 +71,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:${project.constraintlayout}"
 
     // material
-    api "com.google.android.material:material:${project.material}"
+    implementation "com.google.android.material:material:${project.material}"
 
     // swiperefreshlayout
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:${project.swiperefreshlayout}"

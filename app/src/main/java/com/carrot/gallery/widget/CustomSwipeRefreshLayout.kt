@@ -20,6 +20,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import kotlin.math.abs
 
 class CustomSwipeRefreshLayout : SwipeRefreshLayout {
     private var startGestureX: Float = 0f
@@ -38,7 +39,7 @@ class CustomSwipeRefreshLayout : SwipeRefreshLayout {
 
             MotionEvent.ACTION_MOVE -> {
                 // 가로 스와이프가 더 길면 무시
-                if (Math.abs(event.x - startGestureX) > Math.abs(event.y - startGestureY)) {
+                if (abs(event.x - startGestureX) > abs(event.y - startGestureY)) {
                     return false
                 }
             }

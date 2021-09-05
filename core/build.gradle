@@ -62,12 +62,12 @@ dependencies {
     api "com.jakewharton.timber:timber:${project.timber}"
 
     // retrofit2
-    implementation("com.squareup.retrofit2:retrofit:${project.retrofit}") {
+    api("com.squareup.retrofit2:retrofit:${project.retrofit}") {
         exclude module: 'okhttp'
     }
-    api "com.squareup.retrofit2:converter-gson:${project.gson_converter}"
-    api "com.squareup.okhttp3:okhttp:${project.okhttp}"
-    api "com.squareup.okhttp3:logging-interceptor:${project.okhttp_interceptor}"
+    implementation "com.squareup.retrofit2:converter-gson:${project.gson_converter}"
+    implementation "com.squareup.okhttp3:okhttp:${project.okhttp}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${project.okhttp_interceptor}"
     implementation "com.google.code.gson:gson:${project.gson}"
 
     // test

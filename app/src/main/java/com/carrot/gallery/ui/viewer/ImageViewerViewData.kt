@@ -2,8 +2,8 @@ package com.carrot.gallery.ui.viewer
 
 import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.core.util.CollectionUtils
+import com.carrot.gallery.core.util.toImmutableList
 import com.carrot.gallery.model.domain.Image
-import okhttp3.internal.toImmutableList
 
 data class ImageViewerViewData(
     val id: Long,

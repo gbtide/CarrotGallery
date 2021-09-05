@@ -16,13 +16,13 @@ import androidx.viewpager2.widget.ViewPager2
 import com.carrot.gallery.ui.SharedViewModel
 import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.core.image.ImageUrlMaker
+import com.carrot.gallery.core.util.toImmutableList
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
 import com.carrot.gallery.ui.BaseAdapter
 import com.carrot.gallery.ui.ItemBinder
 import com.carrot.gallery.ui.ItemClass
 import com.carrot.gallery.util.observeOnce
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.internal.toImmutableList
 import timber.log.Timber
 import javax.inject.Inject
 

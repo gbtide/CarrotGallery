@@ -1,8 +1,8 @@
 package com.carrot.gallery.ui.gallery
 
 import com.carrot.gallery.core.util.CollectionUtils
+import com.carrot.gallery.core.util.toImmutableList
 import com.carrot.gallery.model.domain.Image
-import okhttp3.internal.toImmutableList
 
 /**
  * Created by kyunghoon on 2021-09-01
