@@ -1,18 +1,13 @@
 package com.carrot.gallery.core.di
 
-import com.carrot.gallery.core.data.ImageApis
 import com.carrot.gallery.core.OkHttpInterceptor
-import com.carrot.gallery.core.data.ImageDataSource
-import com.carrot.gallery.core.data.ImageRepository
-import com.carrot.gallery.core.data.LoremPicksumImageDataSource
-import com.carrot.gallery.core.data.LoremPicksumImageRepository
+import com.carrot.gallery.core.data.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -44,31 +39,15 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, factory: Converter.Factory): Retrofit {
+    fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://picsum.photos/")
-            .addConverterFactory(factory)
-            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(OkHttpClient.Builder()
+                .addInterceptor(OkHttpInterceptor())
+                .build())
             .build()
     }
 
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(interceptor: Interceptor): OkHttpClient {
-        return OkHttpClient.Builder().addInterceptor(interceptor).build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideInterceptor(): Interceptor {
-        return OkHttpInterceptor()
-//        return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-    }
-
-    @Provides
-    @Singleton
-    fun provideConverterFactory(): Converter.Factory {
-        return GsonConverterFactory.create()
-    }
 
 }
