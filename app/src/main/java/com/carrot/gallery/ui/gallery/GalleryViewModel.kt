@@ -10,7 +10,6 @@ import com.carrot.gallery.core.result.Result
 import com.carrot.gallery.core.result.successOr
 import com.carrot.gallery.core.util.CollectionUtils
 import com.carrot.gallery.core.util.notifyObserver
-import com.carrot.gallery.core.util.observeByDebounce
 import com.carrot.gallery.core.util.observeByFirstThrottle
 import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +19,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -47,7 +45,7 @@ class GalleryViewModel @Inject constructor(
     val moreLoadingShown = requestedImagesStream.map { it is Result.Loading && (currentPage.value!! > FIRST_IMAGE_PAGE_NO) }
     val errorViewShown = requestedImagesStream.map { isErrorOrDuringRecovery(it) }
     val emptyViewShown = requestedImagesStream.map { isEmpty(it, currentPage.value!!) }
-    private val dummyObserver = Observer<Any>{}
+    private val dummyObserver = Observer<Any> {}
 
     val images = MutableLiveData<List<Image>>()
 

@@ -13,7 +13,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
-import com.carrot.gallery.ui.SharedViewModel
 import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.core.util.toImmutableList
@@ -21,9 +20,9 @@ import com.carrot.gallery.databinding.FragmentImageViewerBinding
 import com.carrot.gallery.ui.BaseAdapter
 import com.carrot.gallery.ui.ItemBinder
 import com.carrot.gallery.ui.ItemClass
+import com.carrot.gallery.ui.SharedViewModel
 import com.carrot.gallery.util.observeOnce
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -39,7 +38,7 @@ class ImageViewerFragment : Fragment() {
         const val ARG_KEY_POSITION = "position"
     }
 
-    private val args : ImageViewerFragmentArgs by navArgs()
+    private val args: ImageViewerFragmentArgs by navArgs()
 
     private lateinit var binding: FragmentImageViewerBinding
     private val viewModel: ImageViewerViewModel by viewModels()
@@ -54,7 +53,7 @@ class ImageViewerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentImageViewerBinding.inflate(inflater, container, false)
             .apply {
                 lifecycleOwner = viewLifecycleOwner
@@ -70,7 +69,7 @@ class ImageViewerFragment : Fragment() {
     }
 
     private fun initView() {
-        binding.imageViewerViewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+        binding.imageViewerViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 viewModel.onPageSelected(position)
                 sharedViewModel.onPageSelectedAtImageViewer(position)
@@ -144,9 +143,7 @@ class ImageViewerFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        arguments?.let {
-            it.putInt(ARG_KEY_POSITION, binding.imageViewerViewPager.currentItem)
-        }
+        arguments?.putInt(ARG_KEY_POSITION, binding.imageViewerViewPager.currentItem)
     }
 
 }
