@@ -49,6 +49,4 @@ class NetworkModule {
             )
             .build()
     }
-
-
 }

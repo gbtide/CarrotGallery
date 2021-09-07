@@ -36,17 +36,19 @@ fun loadGalleryImageAtGrid(
         .load(imageUrl)
         .centerCrop()
         .thumbnail(0.1f)
-        .listener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                galleryShimmerView.stopShimmer()
-                return true
-            }
+        .listener(
+            object : RequestListener<Drawable> {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                    galleryShimmerView.stopShimmer()
+                    return true
+                }
 
-            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                galleryShimmerView.stopShimmer()
-                return false
+                override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    galleryShimmerView.stopShimmer()
+                    return false
+                }
             }
-        })
+        )
         .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
         .transition(DrawableTransitionOptions.withCrossFade(100))
         .into(imageView)

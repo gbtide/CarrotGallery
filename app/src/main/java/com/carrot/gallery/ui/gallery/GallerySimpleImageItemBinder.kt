@@ -21,8 +21,12 @@ class GallerySimpleImageItemBinder(
     override fun createViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         return SimpleImageViewHolder(
             ItemGallerySimpleImageBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            ), galleryItemClickListener, imageUrlMaker
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            ),
+            galleryItemClickListener,
+            imageUrlMaker
         )
     }
 
@@ -33,7 +37,6 @@ class GallerySimpleImageItemBinder(
     override fun areItemsTheSame(oldItem: GalleryImageItemViewData.SimpleImage, newItem: GalleryImageItemViewData.SimpleImage): Boolean = (oldItem.id == newItem.id)
 
     override fun areContentsTheSame(oldItem: GalleryImageItemViewData.SimpleImage, newItem: GalleryImageItemViewData.SimpleImage): Boolean = (oldItem == newItem)
-
 }
 
 class SimpleImageViewHolder(
@@ -50,5 +53,4 @@ class SimpleImageViewHolder(
         binding.galleryThumbnailUrlMaker = imageUrlMaker
         binding.executePendingBindings()
     }
-
 }

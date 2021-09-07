@@ -13,5 +13,4 @@ abstract class FlowUseCase<in P, R>(private val coroutineDispatcher: CoroutineDi
         .flowOn(coroutineDispatcher)
 
     protected abstract fun execute(parameter: P): Flow<Result<R>>
-
 }

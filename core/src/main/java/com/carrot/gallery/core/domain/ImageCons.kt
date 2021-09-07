@@ -12,5 +12,4 @@ class ImageCons {
         const val BLUR_FILTER_MIN_VALUE = 1
         const val BLUR_FILTER_MAX_VALUE = 10
     }
-
 }

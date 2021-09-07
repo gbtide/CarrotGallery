@@ -49,28 +49,32 @@ fun loadImageToImageViewer(
         .asBitmap()
         .load(url)
         .diskCacheStrategy(DiskCacheStrategy.NONE)
-        .listener(object : RequestListener<Bitmap> {
-            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                shimmerViewLayout.stopShimmer()
-                shimmerViewLayout.visibility = View.GONE
-                errorView.visibility = View.VISIBLE
-                return true
-            }
+        .listener(
+            object : RequestListener<Bitmap> {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                    shimmerViewLayout.stopShimmer()
+                    shimmerViewLayout.visibility = View.GONE
+                    errorView.visibility = View.VISIBLE
+                    return true
+                }
 
-            override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                shimmerViewLayout.stopShimmer()
-                shimmerViewLayout.visibility = View.GONE
-                errorView.visibility = View.GONE
-                return false
+                override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    shimmerViewLayout.stopShimmer()
+                    shimmerViewLayout.visibility = View.GONE
+                    errorView.visibility = View.GONE
+                    return false
+                }
             }
-        })
+        )
         // memo. blink 이슈로 .into(binding.imageViewerView) 를 쓰지 않았습니다.
-        .into(object : CustomTarget<Bitmap>() {
-            override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
-                photoView.setImageBitmap(bitmap)
-            }
+        .into(
+            object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
+                    photoView.setImageBitmap(bitmap)
+                }
 
-            override fun onLoadCleared(placeholder: Drawable?) {
+                override fun onLoadCleared(placeholder: Drawable?) {
+                }
             }
-        })
+        )
 }

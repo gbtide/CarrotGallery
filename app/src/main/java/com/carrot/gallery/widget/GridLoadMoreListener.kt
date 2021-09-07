@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Created by kyunghoon on 2021-08-28
  */
-abstract class GridLoadMoreListener: RecyclerView.OnScrollListener() {
+abstract class GridLoadMoreListener : RecyclerView.OnScrollListener() {
 
     private val threshold = 10
 

@@ -55,7 +55,6 @@ class OneTimeReturnableLiveDataContainerImple : OneTimeReturnableLiveDataContain
         dataVersions[key] = START_VERSION
         return START_VERSION
     }
-
 }
 
 data class Data<T>(val data: T, val version: Int)

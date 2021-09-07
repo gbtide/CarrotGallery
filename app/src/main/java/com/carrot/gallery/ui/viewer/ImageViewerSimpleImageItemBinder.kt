@@ -21,8 +21,12 @@ class ImageViewerSimpleImageItemBinder(
     override fun createViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         return SimpleImageViewHolder(
             ItemImageViewerSimpleImageBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            ), itemSinglePageListener, imageUrlMaker
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            ),
+            itemSinglePageListener,
+            imageUrlMaker
         )
     }
 
@@ -33,7 +37,6 @@ class ImageViewerSimpleImageItemBinder(
     override fun areItemsTheSame(oldItem: ImageViewerViewData, newItem: ImageViewerViewData): Boolean = (oldItem.id == newItem.id)
 
     override fun areContentsTheSame(oldItem: ImageViewerViewData, newItem: ImageViewerViewData): Boolean = (oldItem == newItem)
-
 }
 
 class SimpleImageViewHolder(
@@ -43,20 +46,9 @@ class SimpleImageViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(viewData: ImageViewerViewData) {
-        /**
-         * [ ViewPager2 기본 스펙 테스트 ]
-         *
-         * - 최대 5개의 뷰홀더를 생성하며, 4개의 페이지를 유지한다.
-         * - notifyDataChanged 를 콜하니 보여지는 페이지만 Re-Binding 이 되나, 페이지 넘기면 나머지 페이지도 모두 Re-Binding 된다.
-         * - 예 : 3 (4) 5 6 에서 notifyDataChange 를 거니 (4) 만 Re-Binding 되나, 우로 페이징하면 5,6도 다시 Re-Binding 된다.
-         * - 페이징 시 목적지 페이지 기준 좌우 1page 는 미리 생성(or 유지)하고 있다.
-         * - 결국 현재 페이지만 Re-load 하고 싶으면 ObserverField 를 쓰거나, notifyItemChanged(page) 를 쓰도록 하자.
-         */
-
         binding.viewData = viewData
         binding.urlMaker = imageUrlMaker
         binding.listener = singlePageListener
         binding.executePendingBindings()
     }
-
 }

@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.carrot.gallery.ui.SharedViewModel
 import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.core.util.ScreenUtility
 import com.carrot.gallery.core.util.toImmutableList
@@ -18,11 +17,11 @@ import com.carrot.gallery.databinding.FragmentGalleryBinding
 import com.carrot.gallery.ui.BaseAdapter
 import com.carrot.gallery.ui.ItemBinder
 import com.carrot.gallery.ui.ItemClass
+import com.carrot.gallery.ui.SharedViewModel
 import com.carrot.gallery.util.observeOnce
 import com.carrot.gallery.widget.GridLoadMoreListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class GalleryFragment : Fragment() {
@@ -34,14 +33,14 @@ class GalleryFragment : Fragment() {
     @Inject
     lateinit var imageUrlMaker: ImageUrlMaker
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {}
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGalleryBinding.inflate(inflater, container, false)
@@ -67,31 +66,45 @@ class GalleryFragment : Fragment() {
         binding.galleryRecyclerview.apply {
             adapter = galleryAdapter
             layoutManager = GridLayoutManager(context, GalleryCons.COLUMN_COUNT)
-            addOnScrollListener(object : GridLoadMoreListener() {
-                override fun onLoadMore() {
-                    viewModel.onReceiveLoadMoreSignal()
+            addOnScrollListener(
+                object : GridLoadMoreListener() {
+                    override fun onLoadMore() {
+                        viewModel.onReceiveLoadMoreSignal()
+                    }
                 }
-            })
+            )
         }
     }
 
     private fun initViewModel() {
-        viewModel.images.observe(viewLifecycleOwner, { images ->
-            sharedViewModel.onUpdateImagesAtGallery(images)
-        })
+        viewModel.images.observe(
+            viewLifecycleOwner,
+            { images ->
+                sharedViewModel.onUpdateImagesAtGallery(images)
+            }
+        )
 
-        viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->
-            addToGallery(binding.galleryRecyclerview, images)
-            binding.refreshLayout.isRefreshing = false
-        })
+        viewModel.imageViewDataList.observe(
+            viewLifecycleOwner,
+            { images ->
+                addToGallery(binding.galleryRecyclerview, images)
+                binding.refreshLayout.isRefreshing = false
+            }
+        )
 
-        viewModel.errorViewShown.observe(viewLifecycleOwner, {
-            binding.refreshLayout.isRefreshing = false
-        })
+        viewModel.errorViewShown.observe(
+            viewLifecycleOwner,
+            {
+                binding.refreshLayout.isRefreshing = false
+            }
+        )
 
-        viewModel.emptyViewShown.observe(viewLifecycleOwner, {
-            binding.refreshLayout.isRefreshing = false
-        })
+        viewModel.emptyViewShown.observe(
+            viewLifecycleOwner,
+            {
+                binding.refreshLayout.isRefreshing = false
+            }
+        )
 
         viewModel.observeSingleEvent(viewLifecycleOwner) {
             when (it) {
@@ -104,10 +117,13 @@ class GalleryFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        sharedViewModel.selectedPageFromImageViewer.observeOnce(viewLifecycleOwner, { position ->
-            (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
-                ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2 / 5f).toInt())
-        })
+        sharedViewModel.selectedPageFromImageViewer.observeOnce(
+            viewLifecycleOwner,
+            { position ->
+                (binding.galleryRecyclerview.layoutManager as? GridLayoutManager)
+                    ?.scrollToPositionWithOffset(position, (ScreenUtility.getScreenHeight(context) * 2 / 5f).toInt())
+            }
+        )
     }
 
     private fun addToGallery(recyclerView: RecyclerView, list: List<GalleryImageItemViewData>?) {
@@ -128,6 +144,4 @@ class GalleryFragment : Fragment() {
 //            activity?.reportFullyDrawn()
 //        }
     }
-
-
 }

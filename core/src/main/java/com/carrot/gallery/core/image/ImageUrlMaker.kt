@@ -24,7 +24,6 @@ interface ImageUrlMaker {
      * 필터 이펙트 파라미터를 붙여줍니다.
      */
     fun addFilterEffectParam(url: String, blur: Int, grayscale: Boolean): String
-
 }
 
 class LoremPicsumImageUrlMaker constructor(

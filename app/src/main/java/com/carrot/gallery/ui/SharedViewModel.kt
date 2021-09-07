@@ -30,7 +30,6 @@ class SharedViewModel @Inject constructor(
     val selectedPageFromImageViewer: LiveData<Int>
         get() = getOneTimeReturnableLiveData(_selectedPageFromImageViewer, KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER)
 
-
     fun onUpdateImagesAtGallery(list: List<Image>) {
         _galleryImagesFromGallery.value = createDataForOneTimeReturnableLiveData(list, KEY_GALLERY_IMAGES_FROM_GALLERY)
     }
@@ -38,6 +37,4 @@ class SharedViewModel @Inject constructor(
     fun onPageSelectedAtImageViewer(page: Int) {
         _selectedPageFromImageViewer.value = createDataForOneTimeReturnableLiveData(page, KEY_SELECTED_PAGE_FROM_IMAGE_VIEWER)
     }
-
 }
-

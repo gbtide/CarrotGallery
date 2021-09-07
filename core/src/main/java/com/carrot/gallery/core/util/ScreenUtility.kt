@@ -6,7 +6,6 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import org.jetbrains.annotations.NotNull
 
-
 /**
  * Created by kyunghoon on 2021-08-28
  */
@@ -27,7 +26,5 @@ class ScreenUtility {
             wm.defaultDisplay.getMetrics(dm)
             return dm
         }
-
     }
-
 }

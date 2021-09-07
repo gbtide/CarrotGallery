@@ -30,7 +30,5 @@ class ImageViewerViewDataMapper {
         private fun toImageViewerViewData(image: Image): ImageViewerViewData {
             return ImageViewerViewData(image.id, image.author, image.width, image.height, image.urlWithoutSize, image.linkUrl, ImageCons.BLUR_FILTER_DISABLED, false)
         }
-
     }
-
 }

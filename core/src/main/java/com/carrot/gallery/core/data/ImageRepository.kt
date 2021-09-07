@@ -24,5 +24,4 @@ class LoremPicksumImageRepository @Inject constructor(
         val response = imageDataSource.getImage(id)
         return ImageMapper.fromLoremPicsumImage(response)
     }
-
 }

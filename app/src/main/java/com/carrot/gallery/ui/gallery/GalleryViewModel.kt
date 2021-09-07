@@ -63,7 +63,6 @@ class GalleryViewModel @Inject constructor(
         isLastPage = _addedImages.size < ITEM_COUNT_PER_PAGE
     }
 
-
     val imageViewDataList = MutableLiveData<List<GalleryImageItemViewData>>()
 
     private val addedImageViewDataList: LiveData<List<GalleryImageItemViewData>> = addedImages.asFlow()
@@ -82,7 +81,6 @@ class GalleryViewModel @Inject constructor(
     private val loadMoreEventPublisher: PublishSubject<Boolean> = PublishSubject.create()
     private val disposable = CompositeDisposable()
 
-
     init {
         addedImages.observeForever(addedImagesObserver)
         addedImageViewDataList.observeForever(addedImageViewDataListObserver)
@@ -93,15 +91,17 @@ class GalleryViewModel @Inject constructor(
     }
 
     private fun observeLoadMoreEvent() {
-        disposable.add(loadMoreEventPublisher.observeByFirstThrottle(400) {
-            if (requestedImagesStream.value !is Result.Loading) {
-                if (requestedImagesStream.value is Result.Error) {
-                    retryPage()
-                } else {
-                    requestNextPage()
+        disposable.add(
+            loadMoreEventPublisher.observeByFirstThrottle(400) {
+                if (requestedImagesStream.value !is Result.Loading) {
+                    if (requestedImagesStream.value is Result.Error) {
+                        retryPage()
+                    } else {
+                        requestNextPage()
+                    }
                 }
             }
-        })
+        )
     }
 
     private fun requestFirstPage() {
@@ -117,13 +117,13 @@ class GalleryViewModel @Inject constructor(
     }
 
     private fun isEmpty(result: Result<List<Image>>, page: Int): Boolean {
-        return result is Result.Success
-                && (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(result.data))
+        return result is Result.Success &&
+            (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(result.data))
     }
 
     private fun isErrorOrDuringRecovery(result: Result<List<Image>>): Boolean {
-        return result is Result.Error
-                || (result is Result.Loading && errorViewShown.value == true)
+        return result is Result.Error ||
+            (result is Result.Loading && errorViewShown.value == true)
     }
 
     fun onReceiveLoadMoreSignal() {
@@ -147,7 +147,6 @@ class GalleryViewModel @Inject constructor(
         addedImageViewDataList.removeObserver(addedImageViewDataListObserver)
         errorViewShown.removeObserver(dummyObserver)
     }
-
 }
 
 interface GalleryItemClickListener {

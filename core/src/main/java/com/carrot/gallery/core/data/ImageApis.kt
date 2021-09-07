@@ -15,5 +15,4 @@ interface ImageApis {
 
     @GET("/id/{id}/info")
     suspend fun getImage(@Path("id") id: Long): ImageResponse
-
 }

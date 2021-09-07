@@ -49,9 +49,9 @@ class ImageViewerFragment : Fragment() {
     @Inject
     lateinit var imageUrlMaker: ImageUrlMaker
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentImageViewerBinding.inflate(inflater, container, false)
@@ -69,39 +69,48 @@ class ImageViewerFragment : Fragment() {
     }
 
     private fun initView() {
-        binding.imageViewerViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                viewModel.onPageSelected(position)
-                sharedViewModel.onPageSelectedAtImageViewer(position)
+        binding.imageViewerViewPager.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    viewModel.onPageSelected(position)
+                    sharedViewModel.onPageSelectedAtImageViewer(position)
+                }
             }
-        })
+        )
         binding.bottomBarGrayscaleSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onChangeGrayscaleEffect(isChecked)
         }
 
         binding.bottomBarBlurSeekbar.max = ImageCons.BLUR_FILTER_MAX_VALUE
-        binding.bottomBarBlurSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            }
+        binding.bottomBarBlurSeekbar.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                viewModel.onChangeBlurEffect(binding.bottomBarBlurSeekbar.progress)
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    viewModel.onChangeBlurEffect(binding.bottomBarBlurSeekbar.progress)
+                }
             }
-        })
-
+        )
     }
 
     private fun initViewModel() {
-        sharedViewModel.galleryImagesFromGallery.observeOnce(viewLifecycleOwner, { images ->
-            viewModel.onReceiveImagesFromGallery(images)
-        })
+        sharedViewModel.galleryImagesFromGallery.observeOnce(
+            viewLifecycleOwner,
+            { images ->
+                viewModel.onReceiveImagesFromGallery(images)
+            }
+        )
 
-        viewModel.imageViewDataList.observe(viewLifecycleOwner, { images ->
-            addToViewPager(binding.imageViewerViewPager, images)
-        })
+        viewModel.imageViewDataList.observe(
+            viewLifecycleOwner,
+            { images ->
+                addToViewPager(binding.imageViewerViewPager, images)
+            }
+        )
 
         viewModel.observeSingleEvent(viewLifecycleOwner) {
             when (it) {
@@ -145,5 +154,4 @@ class ImageViewerFragment : Fragment() {
         super.onSaveInstanceState(outState)
         arguments?.putInt(ARG_KEY_POSITION, binding.imageViewerViewPager.currentItem)
     }
-
 }
