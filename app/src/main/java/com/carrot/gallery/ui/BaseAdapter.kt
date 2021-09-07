@@ -60,7 +60,6 @@ class BaseAdapter(
         getViewBinder(holder.itemViewType).onViewDetachedFromWindow(holder)
         super.onViewDetachedFromWindow(holder)
     }
-
 }
 
 /**
@@ -100,5 +99,4 @@ internal class ItemDiffCallback(
     override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean {
         return viewBinders[oldItem::class.java]?.areContentsTheSame(oldItem, newItem) ?: false
     }
-
 }

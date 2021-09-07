@@ -24,7 +24,6 @@ class GetImageUseCase @Inject constructor(
 
             val result = imageRepository.getImage(parameter)
             emit(Result.Success(result))
-
         } catch (e: Exception) {
             emit(Result.Error(e))
         }

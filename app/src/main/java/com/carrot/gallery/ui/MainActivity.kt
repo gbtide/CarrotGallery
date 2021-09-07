@@ -29,5 +29,4 @@ class MainActivity : AppCompatActivity() {
     private fun initViewModel() {
         binding.viewModel = viewModel
     }
-
 }

@@ -22,5 +22,4 @@ abstract class UseCase<in P, R>(private val coroutineDispatcher: CoroutineDispat
 
     @Throws(RuntimeException::class)
     protected abstract suspend fun execute(parameters: P): R
-
 }

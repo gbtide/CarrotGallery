@@ -33,7 +33,5 @@ class GalleryImageItemViewDataMapper {
         private fun toSimpleImage(image: Image): GalleryImageItemViewData.SimpleImage {
             return GalleryImageItemViewData.SimpleImage(image.id, image.author, image.width, image.height, image.linkUrl, image.urlWithoutSize)
         }
-
     }
-
 }

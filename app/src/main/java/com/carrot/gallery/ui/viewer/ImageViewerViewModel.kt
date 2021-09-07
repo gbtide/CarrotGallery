@@ -8,9 +8,7 @@ import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.subjects.PublishSubject
-import timber.log.Timber
 import javax.inject.Inject
-
 
 /**
  * Created by kyunghoon on 2021-01-10
@@ -47,7 +45,6 @@ class ImageViewerViewModel @Inject constructor(
     private val grayscaleSwitchEventPublisher: PublishSubject<Boolean> = PublishSubject.create()
     private val disposable = CompositeDisposable()
 
-
     init {
         _functionBarToggler.value = true
 
@@ -62,25 +59,29 @@ class ImageViewerViewModel @Inject constructor(
     }
 
     private fun observeBlurEffectValue() {
-        disposable.add(blurEffectSeekEventPublisher.observeByDebounce(500) { blurValue ->
-            _currentImage.value?.let { it ->
-                if (it.blur != blurValue) {
-                    it.blur = blurValue
-                    reloadCurrentImage()
+        disposable.add(
+            blurEffectSeekEventPublisher.observeByDebounce(500) { blurValue ->
+                _currentImage.value?.let { it ->
+                    if (it.blur != blurValue) {
+                        it.blur = blurValue
+                        reloadCurrentImage()
+                    }
                 }
             }
-        })
+        )
     }
 
     private fun observeGrayscaleEffectValue() {
-        disposable.add(grayscaleSwitchEventPublisher.observeByDebounce(500) { onEffect ->
-            _currentImage.value?.let { it ->
-                if (it.grayscale != onEffect) {
-                    it.grayscale = onEffect
-                    reloadCurrentImage()
+        disposable.add(
+            grayscaleSwitchEventPublisher.observeByDebounce(500) { onEffect ->
+                _currentImage.value?.let { it ->
+                    if (it.grayscale != onEffect) {
+                        it.grayscale = onEffect
+                        reloadCurrentImage()
+                    }
                 }
             }
-        })
+        )
     }
 
     private fun reloadCurrentImage() {
@@ -124,7 +125,6 @@ class ImageViewerViewModel @Inject constructor(
         disposable.clear()
         position.removeObserver(positionObserver)
     }
-
 }
 
 interface ImageViewerSinglePageListener {

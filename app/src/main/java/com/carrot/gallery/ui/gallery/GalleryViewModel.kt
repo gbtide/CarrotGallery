@@ -10,7 +10,6 @@ import com.carrot.gallery.core.result.Result
 import com.carrot.gallery.core.result.successOr
 import com.carrot.gallery.core.util.CollectionUtils
 import com.carrot.gallery.core.util.notifyObserver
-import com.carrot.gallery.core.util.observeByDebounce
 import com.carrot.gallery.core.util.observeByFirstThrottle
 import com.carrot.gallery.model.domain.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +19,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -47,7 +45,7 @@ class GalleryViewModel @Inject constructor(
     val moreLoadingShown = requestedImagesStream.map { it is Result.Loading && (currentPage.value!! > FIRST_IMAGE_PAGE_NO) }
     val errorViewShown = requestedImagesStream.map { isErrorOrDuringRecovery(it) }
     val emptyViewShown = requestedImagesStream.map { isEmpty(it, currentPage.value!!) }
-    private val dummyObserver = Observer<Any>{}
+    private val dummyObserver = Observer<Any> {}
 
     val images = MutableLiveData<List<Image>>()
 
@@ -64,7 +62,6 @@ class GalleryViewModel @Inject constructor(
         // 2) check "last page"
         isLastPage = _addedImages.size < ITEM_COUNT_PER_PAGE
     }
-
 
     val imageViewDataList = MutableLiveData<List<GalleryImageItemViewData>>()
 
@@ -84,7 +81,6 @@ class GalleryViewModel @Inject constructor(
     private val loadMoreEventPublisher: PublishSubject<Boolean> = PublishSubject.create()
     private val disposable = CompositeDisposable()
 
-
     init {
         addedImages.observeForever(addedImagesObserver)
         addedImageViewDataList.observeForever(addedImageViewDataListObserver)
@@ -95,15 +91,17 @@ class GalleryViewModel @Inject constructor(
     }
 
     private fun observeLoadMoreEvent() {
-        disposable.add(loadMoreEventPublisher.observeByFirstThrottle(400) {
-            if (requestedImagesStream.value !is Result.Loading) {
-                if (requestedImagesStream.value is Result.Error) {
-                    retryPage()
-                } else {
-                    requestNextPage()
+        disposable.add(
+            loadMoreEventPublisher.observeByFirstThrottle(400) {
+                if (requestedImagesStream.value !is Result.Loading) {
+                    if (requestedImagesStream.value is Result.Error) {
+                        retryPage()
+                    } else {
+                        requestNextPage()
+                    }
                 }
             }
-        })
+        )
     }
 
     private fun requestFirstPage() {
@@ -119,13 +117,13 @@ class GalleryViewModel @Inject constructor(
     }
 
     private fun isEmpty(result: Result<List<Image>>, page: Int): Boolean {
-        return result is Result.Success
-                && (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(result.data))
+        return result is Result.Success &&
+            (page == FIRST_IMAGE_PAGE_NO && CollectionUtils.isEmpty(result.data))
     }
 
     private fun isErrorOrDuringRecovery(result: Result<List<Image>>): Boolean {
-        return result is Result.Error
-                || (result is Result.Loading && errorViewShown.value == true)
+        return result is Result.Error ||
+            (result is Result.Loading && errorViewShown.value == true)
     }
 
     fun onReceiveLoadMoreSignal() {
@@ -149,7 +147,6 @@ class GalleryViewModel @Inject constructor(
         addedImageViewDataList.removeObserver(addedImageViewDataListObserver)
         errorViewShown.removeObserver(dummyObserver)
     }
-
 }
 
 interface GalleryItemClickListener {

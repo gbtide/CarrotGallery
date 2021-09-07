@@ -24,5 +24,4 @@ class ViewModelScopedModule {
     @ViewModelScoped
     @Provides
     fun provideOneTimeReturnableLiveDataContainer(): OneTimeReturnableLiveDataContainer = OneTimeReturnableLiveDataContainerImple()
-
 }

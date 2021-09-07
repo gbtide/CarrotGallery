@@ -116,7 +116,7 @@ class OkHttpInterceptor : Interceptor {
      * 즉, 로깅을 위해 source buffer 를 clone 해서 사용한다.
      */
     @Throws(Exception::class)
-    private fun getBodyStringFrom(rawResponse: Response): String? {
+    private fun getBodyStringFrom(rawResponse: Response): String {
         val responseBody = rawResponse.body
         val source = responseBody!!.source()
         source.request(Long.MAX_VALUE) // request the entire body.
@@ -125,11 +125,10 @@ class OkHttpInterceptor : Interceptor {
     }
 
     @Throws(Exception::class)
-    private fun getBodyStringFrom(request: Request): String? {
+    private fun getBodyStringFrom(request: Request): String {
         val copy = request.newBuilder().build()
         val buffer = Buffer()
         copy.body!!.writeTo(buffer)
         return buffer.readString(StandardCharsets.UTF_8)
     }
-
 }

@@ -47,5 +47,4 @@ class ImageMapper {
             return url.substring(0, url.lastIndexOf('/'))
         }
     }
-
 }

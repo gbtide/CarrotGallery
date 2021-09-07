@@ -1,8 +1,8 @@
 package com.carrot.gallery.core.di
 
 import android.content.Context
-import com.carrot.gallery.core.image.LoremPicsumImageUrlMaker
 import com.carrot.gallery.core.image.ImageUrlMaker
+import com.carrot.gallery.core.image.LoremPicsumImageUrlMaker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +22,4 @@ class UtilsModule {
     fun provideThumbnailUrlMaker(@ApplicationContext context: Context): ImageUrlMaker {
         return LoremPicsumImageUrlMaker(context)
     }
-
 }

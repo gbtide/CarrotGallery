@@ -11,6 +11,3 @@ dependencies {
     // gson
     implementation "com.google.code.gson:gson:${project.gson}"
 }
-
-sourceCompatibility = "1.8"
-targetCompatibility = "1.8"

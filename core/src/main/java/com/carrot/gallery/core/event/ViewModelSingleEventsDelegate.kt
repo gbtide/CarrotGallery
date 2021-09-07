@@ -12,7 +12,6 @@ interface ViewModelSingleEventsDelegate {
 
 interface SingleEventType
 
-
 /**
  * Single Event 를 SingleLiveEvent 로 구현한다.
  */

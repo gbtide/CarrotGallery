@@ -17,5 +17,4 @@ object CustomShimmer {
         .setBaseColor(Color.GRAY)
         .setHighlightColor(Color.WHITE)
         .build()
-
 }
