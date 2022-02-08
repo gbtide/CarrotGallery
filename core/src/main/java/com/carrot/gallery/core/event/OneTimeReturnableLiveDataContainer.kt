@@ -37,7 +37,7 @@ class OneTimeReturnableLiveDataContainerImple : OneTimeReturnableLiveDataContain
             if (inputData.version > getOneTimeReturnableLiveDataVersion(key)) {
                 dataVersions[key] = inputData.version
                 val liveData = MutableLiveData<T>()
-                liveData.value = inputData.data
+                liveData.value = inputData.data!!
                 return liveData
             }
         }
