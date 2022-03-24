@@ -1,5 +1,6 @@
 package com.carrot.gallery.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,9 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
         init()
+
+        // test
+        startActivity(Intent(this, TestActivity::class.java))
     }
 
     private fun init() {

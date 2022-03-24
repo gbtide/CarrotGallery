@@ -1,6 +1,6 @@
 package com.carrot.gallery.ui.viewer
 
-import com.carrot.gallery.core.domain.ImageCons
+import com.carrot.gallery.core.image.ImageCons
 import com.carrot.gallery.core.util.CollectionUtils
 import com.carrot.gallery.core.util.toImmutableList
 import com.carrot.gallery.model.domain.Image
