@@ -8,6 +8,9 @@ import com.carrot.gallery.R
 import com.carrot.gallery.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * @author kyunghoon
+ */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
