@@ -14,6 +14,7 @@ import timber.log.Timber
 
 /**
  * Created by kyunghoon on 2022-03-21
+ * 테스트용 화면
  */
 class TestFragment : Fragment() {
     private lateinit var binding: FragmentFirstBinding
