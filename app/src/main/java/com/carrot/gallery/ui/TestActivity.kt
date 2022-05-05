@@ -3,6 +3,7 @@ package com.carrot.gallery.ui
 import android.os.Bundle
 import android.view.Menu
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,9 @@ import kotlinx.coroutines.launch
  */
 class TestActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTestBinding
+
+    private val viewModel by viewModels<TestViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTestBinding.inflate(layoutInflater)

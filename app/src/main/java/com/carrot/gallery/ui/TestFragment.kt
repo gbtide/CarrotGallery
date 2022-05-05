@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import com.carrot.gallery.databinding.FragmentFirstBinding
 import timber.log.Timber
 
@@ -15,6 +17,9 @@ import timber.log.Timber
  */
 class TestFragment : Fragment() {
     private lateinit var binding: FragmentFirstBinding
+
+    private val activityViewModel by activityViewModels<TestViewModel>()
+    private val viewModel by viewModels<TestSubViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

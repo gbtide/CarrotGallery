@@ -16,6 +16,8 @@ import timber.log.Timber
 class TestSecondFragment : Fragment() {
     private lateinit var binding: FragmentSecondBinding
 
+//    private val viewModel = viewModels<TestSubViewModel>({ requireParentFragment() })
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
