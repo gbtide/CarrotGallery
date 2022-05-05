@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * @author kyunghoon
+ * 메인
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
