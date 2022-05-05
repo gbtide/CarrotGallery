@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 
 /**
  * Created by kyunghoon on 2022-03-29
+ * #2 주석 추가
  */
 class TestSubViewModel : ViewModel() {
 }
