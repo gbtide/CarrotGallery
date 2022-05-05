@@ -1,0 +1,16 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_some"
+        android:icon="@drawable/ic_launcher_background"
+        android:title="@string/app_name"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_close"
+        android:icon="@drawable/ic_waitlist_available"
+        android:title="@string/image_more_button"
+        app:showAsAction="ifRoom|withText"/>
+
+</menu>

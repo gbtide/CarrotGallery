@@ -2,7 +2,6 @@ package com.carrot.gallery.core.image
 
 import android.content.Context
 import android.net.Uri
-import com.carrot.gallery.core.domain.ImageCons
 import com.carrot.gallery.core.util.ScreenUtility
 
 /**
