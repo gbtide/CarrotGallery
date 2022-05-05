@@ -1,0 +1,16 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_menu"
+        android:title="@string/image_filter_blur"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_done"
+        android:icon="@drawable/ic_nav_list"
+        android:title="@string/image_filter_grayscale"
+        app:showAsAction="ifRoom|withText"/>
+
+</menu>

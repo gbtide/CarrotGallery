@@ -1,4 +1,4 @@
-package com.carrot.gallery.core.domain
+package com.carrot.gallery.core.image
 
 /**
  * Created by kyunghoon on 2021-08-29

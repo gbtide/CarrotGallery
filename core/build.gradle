@@ -59,9 +59,15 @@ dependencies {
     // rxjava
     api "io.reactivex.rxjava3:rxandroid:${project.rxjava}"
     api "io.reactivex.rxjava3:rxjava:${project.rxjava}"
+    api "com.jakewharton.rxrelay3:rxrelay:${project.rxrelay}"
 
     // jakewharton Timber
     api "com.jakewharton.timber:timber:${project.timber}"
+
+    // glide
+    api "com.github.bumptech.glide:glide:${project.glide}"
+    kapt "com.github.bumptech.glide:compiler:${project.glide}"
+    api "com.github.bumptech.glide:annotations:${project.glide}"
 
     // retrofit2
     api("com.squareup.retrofit2:retrofit:${project.retrofit}") {
@@ -76,5 +82,5 @@ dependencies {
     testImplementation "junit:junit:${project.junit}"
     androidTestImplementation "androidx.test.ext:junit:${project.ext_junit}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${project.espresso_core}"
-
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${project.coroutines_test}"
 }

@@ -13,7 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
-import com.carrot.gallery.core.domain.ImageCons
+import com.carrot.gallery.core.image.ImageCons
 import com.carrot.gallery.core.image.ImageUrlMaker
 import com.carrot.gallery.core.util.toImmutableList
 import com.carrot.gallery.databinding.FragmentImageViewerBinding
@@ -99,18 +99,16 @@ class ImageViewerFragment : Fragment() {
 
     private fun initViewModel() {
         sharedViewModel.galleryImagesFromGallery.observeOnce(
-            viewLifecycleOwner,
-            { images ->
-                viewModel.onReceiveImagesFromGallery(images)
-            }
-        )
+            viewLifecycleOwner
+        ) { images ->
+            viewModel.onReceiveImagesFromGallery(images)
+        }
 
         viewModel.imageViewDataList.observe(
-            viewLifecycleOwner,
-            { images ->
-                addToViewPager(binding.imageViewerViewPager, images)
-            }
-        )
+            viewLifecycleOwner
+        ) { images ->
+            addToViewPager(binding.imageViewerViewPager, images)
+        }
 
         viewModel.observeSingleEvent(viewLifecycleOwner) {
             when (it) {

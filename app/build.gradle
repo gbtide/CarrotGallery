@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'androidx.navigation.safeargs.kotlin'
+apply plugin: 'androidx.navigation.safeargs'
 // 2021.09.07 kotlinter
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
 
@@ -34,6 +34,7 @@ android {
 
     buildFeatures {
         dataBinding = true
+        viewBinding true
     }
 
     // 프로젝트 자바 8 설정
@@ -67,6 +68,8 @@ dependencies {
     // hilt
     implementation "com.google.dagger:hilt-android:${project.hilt_android}"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:${project.hilt_lifecycle_viewmodel}"
+    implementation "androidx.navigation:navigation-fragment-ktx:${project.navigation_ktx}"
+    implementation "androidx.navigation:navigation-ui-ktx:${project.navigation_ktx}"
     kapt "com.google.dagger:hilt-android-compiler:${project.hilt_android_compiler}"
 
     // constraint layout
@@ -77,11 +80,6 @@ dependencies {
 
     // swiperefreshlayout
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:${project.swiperefreshlayout}"
-
-    // glide
-    implementation "com.github.bumptech.glide:glide:${project.glide}"
-    kapt "com.github.bumptech.glide:compiler:${project.glide}"
-    implementation "com.github.bumptech.glide:annotations:${project.glide}"
 
     // navigation
     implementation "androidx.navigation:navigation-fragment-ktx:${project.navigation}"
@@ -102,5 +100,12 @@ dependencies {
     testImplementation "junit:junit:${project.junit}"
     androidTestImplementation "androidx.test.ext:junit:${project.ext_junit}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${project.espresso_core}"
+    androidTestImplementation "androidx.arch.core:core-testing:${project.arch_testing}"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${project.coroutines_test}"
 
+    // reflection
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+
+    // Kotlin + coroutines
+    implementation "androidx.work:work-runtime-ktx:${project.work_manager}"
 }
