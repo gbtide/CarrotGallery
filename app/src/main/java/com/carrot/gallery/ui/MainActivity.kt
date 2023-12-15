@@ -26,9 +26,6 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
         init()
-
-        // test
-        startActivity(Intent(this, TestActivity::class.java))
     }
 
     private fun init() {

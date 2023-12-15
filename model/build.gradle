@@ -6,7 +6,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // core ktx
-    implementation "androidx.core:core-ktx:${project.core_ktx}"
+//    implementation "androidx.core:core-ktx:${project.core_ktx}"
 
     // gson
     implementation "com.google.code.gson:gson:${project.gson}"
